@@ -1,0 +1,13 @@
+{
+  "include": ["./src/"],
+  "compilerOptions": {
+    /* Visit https://aka.ms/tsconfig.json to read more about this file */
+    "rootDir": "./src",
+    "outDir": "./build",
+    "target": "es5",
+    "allowJs":true,
+    "removeComments": true,
+    "strict": true,
+    "module":"ESNext"
+  }
+}

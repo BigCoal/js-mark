@@ -1,0 +1,27 @@
+{
+  "name": "js-highlight",
+  "version": "1.0.0",
+  "description": "文本高亮插件",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm-run-all --parallel start:*",
+    "start:build": "tsc",
+    "eslint": "eslint src --ext .ts",
+    "rollup": "rollup --config --silent"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitee.com:sxlazbk/js-highlight.git"
+  },
+  "keywords": [
+    "height"
+  ],
+  "author": "大煤球",
+  "license": "ISC",
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "rollup": "^2.34.2",
+    "rollup-plugin-babel": "^4.4.0",
+    "typescript": "^4.1.2"
+  }
+}
