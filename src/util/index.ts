@@ -1,10 +1,7 @@
 
 
+import { NodeTypes } from "../lib/index.js"
 
-enum NodeTypes {
-  ELEMENT_NODE = 1,
-  TEXT_NODE = 3
-}
 export function Guid(): string {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
     function (c) {

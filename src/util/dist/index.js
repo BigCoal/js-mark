@@ -1,20 +1,21 @@
-var NodeTypes;
-(function (NodeTypes) {
-    NodeTypes[NodeTypes["ELEMENT_NODE"] = 1] = "ELEMENT_NODE";
-    NodeTypes[NodeTypes["TEXT_NODE"] = 3] = "TEXT_NODE";
-})(NodeTypes || (NodeTypes = {}));
-export function Guid() {
+"use strict";
+exports.__esModule = true;
+exports.relativeNode = exports.relativeOffset = exports.getTextNodes = exports.Guid = void 0;
+var index_js_1 = require("../lib/index.js");
+function Guid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
 }
-export function getTextNodes(ele) {
+exports.Guid = Guid;
+/** 获取所有的文本节点*/
+function getTextNodes(ele) {
     var nodes = [];
     var e = ele.childNodes;
     for (var i = 0; i < e.length; i++) {
         var element = e[i];
-        if (element.nodeType !== NodeTypes.TEXT_NODE) {
+        if (element.nodeType !== index_js_1.NodeTypes.TEXT_NODE) {
             nodes.push.apply(nodes, getTextNodes(element));
         }
         else {
@@ -23,7 +24,9 @@ export function getTextNodes(ele) {
     }
     return nodes;
 }
-export function relativeOffset(ele, root) {
+exports.getTextNodes = getTextNodes;
+/** 获取ele元素相对于root元素的偏移量*/
+function relativeOffset(ele, root) {
     var textNodes = getTextNodes(root);
     var i = textNodes.indexOf(ele);
     var offset = 0;
@@ -34,7 +37,9 @@ export function relativeOffset(ele, root) {
     }
     return offset;
 }
-export function relativeNode(root, offset) {
+exports.relativeOffset = relativeOffset;
+// /** 获取root元素下偏移量为offset的父节点*/
+function relativeNode(root, offset) {
     var node = null;
     var relativeOffset = 0;
     var textNodes = getTextNodes(root);
@@ -49,3 +54,4 @@ export function relativeNode(root, offset) {
     }
     return node;
 }
+exports.relativeNode = relativeNode;

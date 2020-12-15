@@ -1,58 +1,7 @@
-'use strict';
-
-var NodeTypes;
-(function (NodeTypes) {
-    NodeTypes[NodeTypes["ELEMENT_NODE"] = 1] = "ELEMENT_NODE";
-    NodeTypes[NodeTypes["TEXT_NODE"] = 3] = "TEXT_NODE";
-})(NodeTypes || (NodeTypes = {}));
-function Guid() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
-function getTextNodes(ele) {
-    var nodes = [];
-    var e = ele.childNodes;
-    for (var i = 0; i < e.length; i++) {
-        var element = e[i];
-        if (element.nodeType !== NodeTypes.TEXT_NODE) {
-            nodes.push.apply(nodes, getTextNodes(element));
-        }
-        else {
-            nodes.push(element);
-        }
-    }
-    return nodes;
-}
-function relativeOffset(ele, root) {
-    var textNodes = getTextNodes(root);
-    var i = textNodes.indexOf(ele);
-    var offset = 0;
-    for (var t = 0; t < i; t++) {
-        if (textNodes[t] && textNodes[t].nodeValue !== null) {
-            offset += textNodes[t].nodeValue.length;
-        }
-    }
-    return offset;
-}
-function relativeNode(root, offset) {
-    var node = null;
-    var relativeOffset = 0;
-    var textNodes = getTextNodes(root);
-    for (var t = 0; t < textNodes.length; t++) {
-        if (textNodes[t] && textNodes[t].nodeValue !== null) {
-            relativeOffset += textNodes[t].nodeValue.length;
-        }
-        if (offset <= relativeOffset) {
-            node = textNodes[t];
-            break;
-        }
-    }
-    return node;
-}
-
-var textSelector = (function () {
+"use strict";
+exports.__esModule = true;
+var Util = require("./util/index.js");
+var textSelector = /** @class */ (function () {
     function textSelector(element) {
         this.element = element;
         this.selection = window.getSelection();
@@ -65,8 +14,8 @@ var textSelector = (function () {
     }
     textSelector.prototype._initEvent = function () {
         var that = this;
-        this._mouseUp = function () {
-            that.captureSelection();
+        this._mouseUp = function (e) {
+            that.captureSelection(undefined, e);
         };
         this._click = function (e) {
             if (e.target !== null && "dataset" in e.target) {
@@ -90,67 +39,67 @@ var textSelector = (function () {
         this.element.addEventListener("mouseup", function (e) {
             that._mouseUp && that._mouseUp(e);
         });
-        this.element.addEventListener("click", function (e) {
-            that._click && that._click(e);
-        });
     };
     textSelector.prototype.destroyEvent = function () {
         var that = this;
         this.element.removeEventListener("mouseup", function (e) {
             that._mouseUp && that._mouseUp(e);
         });
-        this.element.removeEventListener("click", function (e) {
-            that._click && that._click(e);
-        });
     };
     textSelector.prototype.fromStore = function (obj) {
         var _this = this;
         obj.map(function (item) {
-            var startParentNode = relativeNode(_this.element, item.offset);
-            var endParentNode = relativeNode(_this.element, item.offset + item.text.length);
+            var startParentNode = Util.relativeNode(_this.element, item.offset);
+            var endParentNode = Util.relativeNode(_this.element, item.offset + item.text.length);
             if (endParentNode && startParentNode) {
                 _this.captureSelection({
                     "collapsed": false,
                     "commonAncestorContainer": _this.element,
                     "endContainer": endParentNode,
-                    "endOffset": item.offset + item.text.length - relativeOffset(endParentNode, _this.element),
+                    "endOffset": item.offset + item.text.length - Util.relativeOffset(endParentNode, _this.element),
                     "startContainer": startParentNode,
-                    "startOffset": item.offset - relativeOffset(startParentNode, _this.element),
+                    "startOffset": item.offset - Util.relativeOffset(startParentNode, _this.element),
+                    "other": item
                 });
             }
         });
     };
-    textSelector.prototype.captureSelection = function (rangeNode) {
+    textSelector.prototype.captureSelection = function (rangeNode, e) {
         var selection = this.selection;
         if (selection == null)
             return;
         var range = rangeNode || selection.getRangeAt(0);
-        console.log(range);
-        if (range.collapsed)
+        if (range.collapsed) {
+            this._click && this._click(e);
             return;
+        }
         var r = {
             startContainer: range.startContainer,
             endContainer: range.endContainer,
             startOffset: range.startOffset,
-            endOffset: range.endOffset,
+            endOffset: range.endOffset
         };
-        if (r.startContainer !== r.endContainer) {
-            var endContainer = r.endContainer.splitText(r.endOffset);
-            r.endContainer = endContainer.previousSibling;
-            r.startContainer = r.startContainer.splitText(r.startOffset);
+        // if(r.startContainer !== r.endContainer){
+        if (r.startContainer.parentNode.dataset.selector || r.endContainer.parentNode.dataset.selector) {
+            console.log("不允许重复标注");
+            selection.removeAllRanges();
+            return this._selected && this._selected("不允许重复标注");
+            // let endContainer = r.endContainer.splitText(r.endOffset)
+            // r.endContainer = endContainer.previousSibling as Text
+            // r.startContainer = r.startContainer.splitText(r.startOffset)
         }
         else {
             var endContainer = r.endContainer.splitText(r.endOffset);
             r.startContainer = r.startContainer.splitText(r.startOffset);
             r.endContainer = endContainer.previousSibling;
         }
-        var textNodes = getTextNodes(range.commonAncestorContainer);
-        var offset = relativeOffset(r.startContainer, this.element);
+        var textNodes = Util.getTextNodes(range.commonAncestorContainer);
+        var offset = Util.relativeOffset(r.startContainer, this.element);
         var rangeNodes = this.getSelectTextNode(textNodes, r);
         var text = "";
         for (var i = 0; i < rangeNodes.length; i++) {
-            var e = rangeNodes[i];
-            text += e.nodeValue;
+            var e_1 = rangeNodes[i];
+            text += e_1.nodeValue;
         }
         var firstRender = true;
         if (!rangeNode) {
@@ -159,6 +108,7 @@ var textSelector = (function () {
         }
         this._selected && this._selected({
             nodes: rangeNodes,
+            other: rangeNode && rangeNode.other ? rangeNode.other : {},
             text: text,
             offset: offset,
             firstRender: firstRender
@@ -172,20 +122,21 @@ var textSelector = (function () {
         });
         return rangeText;
     };
-    textSelector.prototype.repaintRange = function (eleArr, cssClass) {
-        var uuid = Guid();
+    textSelector.prototype.repaintRange = function (eleArr, uuid, cssClass) {
+        var uid = uuid || Util.Guid();
         eleArr.forEach(function (node) {
             if (node.parentNode) {
                 var hl = document.createElement("span");
                 hl.className = cssClass;
-                hl.setAttribute("data-selector", uuid);
+                hl.setAttribute("data-selector", uid);
                 node.parentNode.replaceChild(hl, node);
                 hl.appendChild(node);
             }
         });
         return uuid;
     };
-    textSelector.prototype.clearRange = function (eleArr) {
+    textSelector.prototype.clearRange = function (uuid) {
+        var eleArr = document.querySelectorAll("span[data-selector=\"" + uuid + "\"]");
         eleArr.forEach(function (node) {
             if (node.parentNode) {
                 var fragment = document.createDocumentFragment();
@@ -200,5 +151,4 @@ var textSelector = (function () {
     };
     return textSelector;
 }());
-
-module.exports = textSelector;
+exports["default"] = textSelector;

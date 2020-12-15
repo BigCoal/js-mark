@@ -1,5 +1,5 @@
 
-import * as Util from "./util.js"
+import * as Util from "./util/index.js"
 interface SelectInfo {
     offset: number,
     text: string,
@@ -11,7 +11,8 @@ interface rangeNode {
     "endContainer": Text,
     "endOffset": number,
     "startContainer": Text,
-    "startOffset": number
+    "startOffset": number,
+    "other"?: object
 }
 interface Selected {
     nodes: Element[],
@@ -19,7 +20,6 @@ interface Selected {
     offset: number,
     firstRender: boolean
 }
-// import $ from "jquery";
 class textSelector {
     public element: Element;
     public selection: Selection | null;
@@ -42,8 +42,8 @@ class textSelector {
     }
     _initEvent() {
         let that = this;
-        this._mouseUp = function () {
-            that.captureSelection()
+        this._mouseUp = function (e: MouseEvent) {
+            that.captureSelection(undefined, e)
         }
         this._click = function (e: MouseEvent) {
             if (e.target !== null && "dataset" in e.target) {
@@ -53,7 +53,6 @@ class textSelector {
                     that.onClick && that.onClick(doms)
                 }
             }
-
         }
         this._selected = function (e: Selected | string) {
             this.onSelected && this.onSelected({
@@ -68,17 +67,11 @@ class textSelector {
         this.element.addEventListener("mouseup", function (e) {
             that._mouseUp && that._mouseUp(e)
         })
-        this.element.addEventListener("click", function (e) {
-            that._click && that._click(e)
-        })
     }
     destroyEvent() {
         let that = this;
         this.element.removeEventListener("mouseup", function (e) {
             that._mouseUp && that._mouseUp(e)
-        })
-        this.element.removeEventListener("click", function (e) {
-            that._click && that._click(e)
         })
     }
     fromStore(obj: SelectInfo[]): void {
@@ -93,27 +86,33 @@ class textSelector {
                     "endOffset": item.offset + item.text.length - Util.relativeOffset(endParentNode, this.element),
                     "startContainer": startParentNode,
                     "startOffset": item.offset - Util.relativeOffset(startParentNode, this.element),
+                    "other": item
                 })
             }
         })
     }
-    captureSelection(rangeNode?: rangeNode): void {
+    captureSelection(rangeNode?: rangeNode, e?: MouseEvent): void {
         let selection = this.selection;
         if (selection == null) return;
         let range = rangeNode || selection.getRangeAt(0);
-        console.log(range);
-
-        if (range.collapsed) return;
+        if (range.collapsed) {
+            this._click && this._click(e);
+            return;
+        }
         let r = {
             startContainer: range.startContainer as Text,
             endContainer: range.endContainer as Text,
             startOffset: range.startOffset,
             endOffset: range.endOffset,
         }
-        if (r.startContainer !== r.endContainer) {
-            let endContainer = r.endContainer.splitText(r.endOffset)
-            r.endContainer = endContainer.previousSibling as Text
-            r.startContainer = r.startContainer.splitText(r.startOffset)
+        // if(r.startContainer !== r.endContainer){
+        if ((r.startContainer.parentNode as HTMLTextAreaElement).dataset.selector || (r.endContainer.parentNode as HTMLTextAreaElement).dataset.selector) {
+            console.log("不允许重复标注");
+            selection.removeAllRanges();
+            return this._selected && this._selected("不允许重复标注")
+            // let endContainer = r.endContainer.splitText(r.endOffset)
+            // r.endContainer = endContainer.previousSibling as Text
+            // r.startContainer = r.startContainer.splitText(r.startOffset)
         } else {
             let endContainer = r.endContainer.splitText(r.endOffset)
             r.startContainer = r.startContainer.splitText(r.startOffset)
@@ -134,6 +133,7 @@ class textSelector {
         }
         this._selected && this._selected({
             nodes: rangeNodes,
+            other: rangeNode && rangeNode.other ? rangeNode.other : {},
             text,
             offset,
             firstRender
@@ -141,26 +141,27 @@ class textSelector {
     }
     getSelectTextNode(textNodes: ChildNode[], range: rangeNode) {
         let startIndex = textNodes.indexOf(range.startContainer)
-        let endIndex = textNodes.indexOf(range.endContainer )
+        let endIndex = textNodes.indexOf(range.endContainer)
         let rangeText = textNodes.filter((item, i) => {
             return startIndex <= i && endIndex >= i
         })
         return rangeText
     }
-    repaintRange(eleArr: Element[], cssClass: string) {
-        let uuid = Util.Guid();
+    repaintRange(eleArr: Element[], uuid: string, cssClass: string) {
+        let uid = uuid || Util.Guid();
         eleArr.forEach(node => {
             if (node.parentNode) {
                 let hl = document.createElement("span");
                 hl.className = cssClass;
-                hl.setAttribute("data-selector", uuid)
+                hl.setAttribute("data-selector", uid)
                 node.parentNode.replaceChild(hl, node);
                 hl.appendChild(node);
             }
         })
         return uuid
     }
-    clearRange(eleArr: Element[]): void {
+    clearRange(uuid: Number): void {
+        let eleArr = document.querySelectorAll(`span[data-selector="${uuid}"]`)
         eleArr.forEach(node => {
             if (node.parentNode) {
                 const fragment = document.createDocumentFragment()
@@ -175,5 +176,4 @@ class textSelector {
         })
     }
 }
-let a = 123;
 export default textSelector

@@ -1,4 +1,4 @@
-import * as Util from "./util.js";
+import * as Util from "./util/index.js";
 var textSelector = (function () {
     function textSelector(element) {
         this.element = element;
@@ -12,8 +12,8 @@ var textSelector = (function () {
     }
     textSelector.prototype._initEvent = function () {
         var that = this;
-        this._mouseUp = function () {
-            that.captureSelection();
+        this._mouseUp = function (e) {
+            that.captureSelection(undefined, e);
         };
         this._click = function (e) {
             if (e.target !== null && "dataset" in e.target) {
@@ -37,17 +37,11 @@ var textSelector = (function () {
         this.element.addEventListener("mouseup", function (e) {
             that._mouseUp && that._mouseUp(e);
         });
-        this.element.addEventListener("click", function (e) {
-            that._click && that._click(e);
-        });
     };
     textSelector.prototype.destroyEvent = function () {
         var that = this;
         this.element.removeEventListener("mouseup", function (e) {
             that._mouseUp && that._mouseUp(e);
-        });
-        this.element.removeEventListener("click", function (e) {
-            that._click && that._click(e);
         });
     };
     textSelector.prototype.fromStore = function (obj) {
@@ -63,28 +57,30 @@ var textSelector = (function () {
                     "endOffset": item.offset + item.text.length - Util.relativeOffset(endParentNode, _this.element),
                     "startContainer": startParentNode,
                     "startOffset": item.offset - Util.relativeOffset(startParentNode, _this.element),
+                    "other": item
                 });
             }
         });
     };
-    textSelector.prototype.captureSelection = function (rangeNode) {
+    textSelector.prototype.captureSelection = function (rangeNode, e) {
         var selection = this.selection;
         if (selection == null)
             return;
         var range = rangeNode || selection.getRangeAt(0);
-        console.log(range);
-        if (range.collapsed)
+        if (range.collapsed) {
+            this._click && this._click(e);
             return;
+        }
         var r = {
             startContainer: range.startContainer,
             endContainer: range.endContainer,
             startOffset: range.startOffset,
             endOffset: range.endOffset,
         };
-        if (r.startContainer !== r.endContainer) {
-            var endContainer = r.endContainer.splitText(r.endOffset);
-            r.endContainer = endContainer.previousSibling;
-            r.startContainer = r.startContainer.splitText(r.startOffset);
+        if (r.startContainer.parentNode.dataset.selector || r.endContainer.parentNode.dataset.selector) {
+            console.log("不允许重复标注");
+            selection.removeAllRanges();
+            return this._selected && this._selected("不允许重复标注");
         }
         else {
             var endContainer = r.endContainer.splitText(r.endOffset);
@@ -96,8 +92,8 @@ var textSelector = (function () {
         var rangeNodes = this.getSelectTextNode(textNodes, r);
         var text = "";
         for (var i = 0; i < rangeNodes.length; i++) {
-            var e = rangeNodes[i];
-            text += e.nodeValue;
+            var e_1 = rangeNodes[i];
+            text += e_1.nodeValue;
         }
         var firstRender = true;
         if (!rangeNode) {
@@ -106,6 +102,7 @@ var textSelector = (function () {
         }
         this._selected && this._selected({
             nodes: rangeNodes,
+            other: rangeNode && rangeNode.other ? rangeNode.other : {},
             text: text,
             offset: offset,
             firstRender: firstRender
@@ -119,20 +116,21 @@ var textSelector = (function () {
         });
         return rangeText;
     };
-    textSelector.prototype.repaintRange = function (eleArr, cssClass) {
-        var uuid = Util.Guid();
+    textSelector.prototype.repaintRange = function (eleArr, uuid, cssClass) {
+        var uid = uuid || Util.Guid();
         eleArr.forEach(function (node) {
             if (node.parentNode) {
                 var hl = document.createElement("span");
                 hl.className = cssClass;
-                hl.setAttribute("data-selector", uuid);
+                hl.setAttribute("data-selector", uid);
                 node.parentNode.replaceChild(hl, node);
                 hl.appendChild(node);
             }
         });
         return uuid;
     };
-    textSelector.prototype.clearRange = function (eleArr) {
+    textSelector.prototype.clearRange = function (uuid) {
+        var eleArr = document.querySelectorAll("span[data-selector=\"" + uuid + "\"]");
         eleArr.forEach(function (node) {
             if (node.parentNode) {
                 var fragment = document.createDocumentFragment();

@@ -61,21 +61,18 @@
         </div>
 
     </div>
+    <!-- <script src="./dist/js-highlight.js"></script> -->
     <script type="module">
-        import textSelector from "./build/index.js";
+        import textSelector from "../dist/js-highlight.js";
         window.onload = function () {
-
-
             function setLocal(position) {
                 let data = getLocal();
                 data.push(position);
                 localStorage.setItem("data", JSON.stringify(data));
             }
-
             function getLocal() {
                 return JSON.parse(localStorage.getItem("data")) || [];
             }
-
             function clearItemLocal(id) {
                 let data = getLocal();
                 data = data.filter((item) => item.uuid !== id);
@@ -91,12 +88,12 @@
 
             let textDom = document.querySelector("#highlight");
             let lineHeight = new textSelector(textDom);
-
             //选中文本后回调
             lineHeight.onSelected = function (res) {
                 if (res.code === 1) {
                     let data = res.data;
-                    let uuid = lineHeight.repaintRange(data.nodes, cssStyle[cssIndex]);
+                    let uid = data.other.uuid;
+                    let uuid = lineHeight.repaintRange(data.nodes,uid, cssStyle[cssIndex]);
                     ++cssIndex >= cssStyle.length ? (cssIndex = 0) : cssIndex;
                     if (!data.firstRender) {
                         setLocal({
@@ -112,7 +109,7 @@
             //点击高亮节点后显示
             lineHeight.onClick = function (eleArr) {
                 alert("删除")
-                lineHeight.clearRange(eleArr);
+                lineHeight.clearRange("1");
                 clearItemLocal(eleArr[0].dataset.selector);
             };
             //本地数据渲染

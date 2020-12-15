@@ -1,27 +1,33 @@
 {
-  "name": "js-highlight",
-  "version": "1.0.0",
-  "description": "文本高亮插件",
-  "main": "index.js",
+  "name": "js-annotation",
+  "version": "1.0.1",
+  "description": "js节点高亮插件，文本标注",
+  "author":"Big Coal <1048506792@qq.com>",
+  "main": "dist/js-annotation.js",
   "scripts": {
-    "dev": "npm-run-all --parallel start:*",
+    "dev": "npm-run-all  start:*",
     "start:build": "tsc",
-    "eslint": "eslint src --ext .ts",
-    "rollup": "rollup --config --silent"
+    "start:rollup": "rollup --config"
   },
   "repository": {
     "type": "git",
     "url": "git@gitee.com:sxlazbk/js-highlight.git"
   },
   "keywords": [
-    "height"
+    "javascript",
+    "typescript",
+    "annotation",
+    "es6"
   ],
   "author": "大煤球",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "@babel/preset-env": "^7.12.7",
     "npm-run-all": "^4.1.5",
     "rollup": "^2.34.2",
     "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-terser": "^7.0.2",
     "typescript": "^4.1.2"
   }
 }
