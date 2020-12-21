@@ -49,7 +49,7 @@ var textSelector = /** @class */ (function () {
     textSelector.prototype.fromStore = function (obj) {
         var _this = this;
         obj.map(function (item) {
-            var startParentNode = Util.relativeNode(_this.element, item.offset);
+            var startParentNode = Util.relativeNode(_this.element, item.offset + 1);
             var endParentNode = Util.relativeNode(_this.element, item.offset + item.text.length);
             if (endParentNode && startParentNode) {
                 _this.captureSelection({
