@@ -76,7 +76,7 @@ class textSelector {
     }
     fromStore(obj: SelectInfo[]): void {
         obj.map((item) => {
-            let startParentNode = Util.relativeNode(this.element, item.offset);
+            let startParentNode = Util.relativeNode(this.element, item.offset+1);
             let endParentNode = Util.relativeNode(this.element, item.offset + item.text.length);
             if (endParentNode && startParentNode) {
                 this.captureSelection({
