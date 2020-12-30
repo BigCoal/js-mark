@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "js节点高亮插件，文本标注",
   "license": "ISC",
-  "author":"BigCoal <1048506792@qq.com>",
+  "author": "BigCoal <1048506792@qq.com>",
   "main": "dist/js-annotation.js",
-  "homepage":"https://github.com/know-vampire/js-annotation.git",
+  "homepage": "https://github.com/know-vampire/js-annotation.git",
   "scripts": {
-    "dev": "npm-run-all  start:*",
-    "start:build": "tsc",
-    "start:rollup": "rollup --config"
+    "build": "npm-run-all  build:*",
+    "build:ts": "tsc",
+    "build:rollup": "rollup --config"
   },
   "repository": {
     "type": "git",
@@ -24,14 +24,21 @@
     "typescript",
     "es6"
   ],
-  "bugs":{
-    "url":"https://github.com/know-vampire/js-annotation.git",
+  "bugs": {
+    "url": "https://github.com/know-vampire/js-annotation.git",
     "email": "1048506792@qq.com"
   },
-  "contributors":[{"name":"朱保康","email":"1048506792@qq.com"}],
+  "contributors": [
+    {
+      "name": "朱保康",
+      "email": "1048506792@qq.com"
+    }
+  ],
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.12.7",
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "npm-run-all": "^4.1.5",
     "rollup": "^2.34.2",
     "rollup-plugin-babel": "^4.4.0",
