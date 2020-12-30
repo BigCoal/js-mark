@@ -30,10 +30,10 @@
 
 <body>
     <div id="highlight">内容：   蚂蚁基金真是好</div>
-    <!-- <script src="./dist/js-highlight.js"></script> -->
+    <script src="../dist/js-mark.js"></script>
     <script type="module">
-        // import textSelector from "../dist/js-annotation.js";
-        import textSelector from "../build/index.js";
+        //  import textSelector from "../dist/js-mark.js";
+        //import textSelector from "../build/index.js";
         window.onload = function () {
             function setLocal(position) {
                 let data = getLocal();
@@ -57,7 +57,12 @@
             ];
 
             let textDom = document.querySelector("#highlight");
-            let lineHeight = new textSelector(textDom);
+            let lineHeight = new textSelector({
+                el:textDom,
+                options:{
+                    isCover:true
+                }
+            });
             //选中文本后回调
             lineHeight.onSelected = function (res) {
                 if (res.code === 1) {
@@ -73,7 +78,7 @@
                         });
                     }
                 } else {
-                    alert(res.data);
+                    console.log(res.data);
                 }
             };
             //点击高亮节点后显示

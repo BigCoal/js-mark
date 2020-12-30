@@ -12,8 +12,8 @@ const inputOptions = {
 };
 const outputOptions = {
     // 核心参数
-    file: resolve("dist/js-annotation.js"), // 若有bundle.write，必填
-    format: "es", // 必填
+    file: resolve("dist/js-mark.js"), // 若有bundle.write，必填
+    format: "umd", // 必填
     name: "textSelector"
 };
 

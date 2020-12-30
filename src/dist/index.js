@@ -1,6 +1,7 @@
 "use strict";
 exports.__esModule = true;
 var Util = require("./util/index.js");
+var config_js_1 = require("./lib/config.js");
 var textSelector = /** @class */ (function () {
     function textSelector(element) {
         this.element = element;
@@ -27,10 +28,11 @@ var textSelector = /** @class */ (function () {
             }
         };
         this._selected = function (e) {
-            this.onSelected && this.onSelected({
-                code: typeof (e) === "string" ? -1 : 1,
-                data: e
-            });
+            this.onSelected &&
+                this.onSelected({
+                    code: typeof e === "string" ? -1 : 1,
+                    data: e
+                });
         };
         this.addEvent();
     };
@@ -53,13 +55,15 @@ var textSelector = /** @class */ (function () {
             var endParentNode = Util.relativeNode(_this.element, item.offset + item.text.length);
             if (endParentNode && startParentNode) {
                 _this.captureSelection({
-                    "collapsed": false,
-                    "commonAncestorContainer": _this.element,
-                    "endContainer": endParentNode,
-                    "endOffset": item.offset + item.text.length - Util.relativeOffset(endParentNode, _this.element),
-                    "startContainer": startParentNode,
-                    "startOffset": item.offset - Util.relativeOffset(startParentNode, _this.element),
-                    "other": item
+                    collapsed: false,
+                    commonAncestorContainer: _this.element,
+                    endContainer: endParentNode,
+                    endOffset: item.offset +
+                        item.text.length -
+                        Util.relativeOffset(endParentNode, _this.element),
+                    startContainer: startParentNode,
+                    startOffset: item.offset - Util.relativeOffset(startParentNode, _this.element),
+                    other: item
                 });
             }
         });
@@ -79,14 +83,19 @@ var textSelector = /** @class */ (function () {
             startOffset: range.startOffset,
             endOffset: range.endOffset
         };
-        // if(r.startContainer !== r.endContainer){
-        if (r.startContainer.parentNode.dataset.selector || r.endContainer.parentNode.dataset.selector) {
-            console.log("不允许重复标注");
+        // debugger
+        if (config_js_1["default"].isCover && r.startContainer !== r.endContainer) {
+            selection.removeAllRanges();
+            var endContainer = r.endContainer.splitText(r.endOffset);
+            r.endContainer = endContainer.previousSibling;
+            r.startContainer = r.startContainer.splitText(r.startOffset);
+        }
+        else if (!config_js_1["default"].isCover &&
+            (r.startContainer.parentNode.dataset
+                .selector ||
+                r.endContainer.parentNode.dataset.selector)) {
             selection.removeAllRanges();
             return this._selected && this._selected("不允许重复标注");
-            // let endContainer = r.endContainer.splitText(r.endOffset)
-            // r.endContainer = endContainer.previousSibling as Text
-            // r.startContainer = r.startContainer.splitText(r.startOffset)
         }
         else {
             var endContainer = r.endContainer.splitText(r.endOffset);
@@ -106,13 +115,14 @@ var textSelector = /** @class */ (function () {
             firstRender = false;
             selection.removeAllRanges();
         }
-        this._selected && this._selected({
-            nodes: rangeNodes,
-            other: rangeNode && rangeNode.other ? rangeNode.other : {},
-            text: text,
-            offset: offset,
-            firstRender: firstRender
-        });
+        this._selected &&
+            this._selected({
+                nodes: rangeNodes,
+                other: rangeNode && rangeNode.other ? rangeNode.other : {},
+                text: text,
+                offset: offset,
+                firstRender: firstRender
+            });
     };
     textSelector.prototype.getSelectTextNode = function (textNodes, range) {
         var startIndex = textNodes.indexOf(range.startContainer);
