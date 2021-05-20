@@ -1,17 +1,36 @@
 module.exports = {
-    extends: [
-      "@commitlint/config-conventional"
+  ignores: [(commit) => commit.includes('init')], //提交过程中忽略有init的字符串
+  extends: ['@commitlint/config-conventional'],
+  parserPreset: {
+    //提交解析规则
+    parserOpts: {
+      headerPattern: /^【(\w*|[\u4e00-\u9fa5]*)】(.*)/,
+      headerCorrespondence: ['type', 'subject'],
+    },
+  },
+  rules: {
+    'body-leading-blank': [2, 'always'], //body上面要有换行
+    'footer-leading-blank': [1, 'always'], //footer上面要有换行
+    'header-max-length': [2, 'always', 108], //header最大108个字符
+    'subject-empty': [2, 'never'], //subject位不能为null
+    'type-empty': [2, 'never'], //type位不能为null
+    'type-enum': [
+      //type提交规则
+      2,
+      'always',
+      [
+        'feat',
+        'fix',
+        'perf',
+        'style',
+        'docs',
+        'test',
+        'refactor',
+        'chore',
+        'revert',
+        'wip',
+        'types',
+      ],
     ],
-    rules: {
-      'type-enum': [2, 'always', [
-        'upd', 'feat', 'fix', 'refactor', 'docs', 'chore', 'style', 'revert'
-       ]],
-      'type-case': [0],
-      'type-empty': [0],
-      'scope-empty': [0],
-      'scope-case': [0],
-      'subject-full-stop': [0, 'never'],
-      'subject-case': [0, 'never'],
-      'header-max-length': [0, 'always', 72]
-    }
-  };
+  },
+};
