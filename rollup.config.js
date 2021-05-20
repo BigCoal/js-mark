@@ -1,22 +1,19 @@
-const rollup = require('rollup');
-const path = require("path");
 import babel from 'rollup-plugin-babel';
 import { terser } from 'rollup-plugin-terser'
+
+const path = require("path");
+
 const resolve = dir => {
     return path.join(__dirname, dir);
 };
 const inputOptions = {
-    // 核心参数
-    input: resolve("build/index.js") // 唯一必填参数
-
+    input: resolve("build/index.js") 
 };
 const outputOptions = {
-    // 核心参数
-    file: resolve("dist/js-mark.js"), // 若有bundle.write，必填
-    format: "umd", // 必填
+    file: resolve("dist/js-mark.js"), 
+    format: "umd", 
     name: "textSelector"
 };
-
 
 export default {
     ...inputOptions,

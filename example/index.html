@@ -30,10 +30,10 @@
 
 <body>
     <div id="highlight">内容：   蚂蚁基金真是好健康的零食交罚款阿迪极乐世界啊发来的就是反馈三大纪律放假啊谁来的快</div>
-    <script src="../dist/js-mark.js"></script>
+    <!-- <script src="../build/js-mark.js"></script> -->
     <script type="module">
         //  import textSelector from "../dist/js-mark.js";
-        //import textSelector from "../build/index.js";
+        import textSelector from "../build/index.js";
         window.onload = function () {
             function setLocal(position) {
                 let data = getLocal();
@@ -88,7 +88,7 @@
                 clearItemLocal(eleArr[0].dataset.selector);
             };
             //本地数据渲染
-            lineHeight.fromStore(getLocal());
+            lineHeight.renderStore(getLocal());
         }
     </script>
 </body>

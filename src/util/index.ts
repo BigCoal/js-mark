@@ -39,7 +39,7 @@ export function relativeOffset(ele: Text, root: Element): number {
 // /** 获取root元素下偏移量为offset的父节点*/
 export function relativeNode(root: Element, offset: number): (null | Text) {
   let node = null;
-  let relativeOffset = 0;
+  let relativeOffset = 0; 
   let textNodes = getTextNodes(root)
   for (let t = 0; t < textNodes.length; t++) {
     if (textNodes[t] && textNodes[t].nodeValue !== null) {

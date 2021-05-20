@@ -1,62 +1,47 @@
 import * as Util from "./util/index.js";
 import config from "./lib/config.js";
 
-interface SelectInfo {
-    offset: number;
-    text: string;
-    uuid?: string;
-}
-interface rangeNode {
-    collapsed?: boolean;
-    commonAncestorContainer?: Element;
-    endContainer: Text;
-    endOffset: number;
-    startContainer: Text;
-    startOffset: number;
-    other?: object;
-}
-interface Selected {
-    nodes: Element[];
-    text: string;
-    offset: number;
-    firstRender: boolean;
-}
-interface options{
-    isCover?:boolean
-}
-interface opsConfig{
-    el:Element,
-    options?:options
-}
 class textSelector {
-    public element: Element;
-    public selection: Selection | null;
-    public _mouseUp: Function | null;
-    public _click: Function | null;
-    public _selected: Function | null;
-    public onSelected: Function | null;
-    public onClick: Function | null;
+    private _element: Element;
+    private _selection: Nullable<Selection>;
+    private _onMouseUp:Nullable<Listener>;
+    private _onClick: Nullable<Function>;
+    private _onSelected:Nullable<Function>;
+
+    public onSelected: Nullable<Function>;
+    public onClick: Nullable<Function>;
 
     constructor(ops: opsConfig) {
-        this.element = ops.el;
-        let options = ops.options;
-        if(options?.isCover??false){
-            config.isCover = options?.isCover?? config.isCover
+        this._element = ops.el;
+        this._selection = window.getSelection();
+
+        if(this._element.nodeType!==1){
+             throw new Error("请挂载dom节点");
         }
-        this.selection = window.getSelection();
-        this._mouseUp = null;
-        this._click = null;
-        this._selected = null;
+        if(!this._selection){
+            throw new Error("浏览器暂不支持标注，请查看文档支持浏览器版本");
+        }
+      
+        config.isCover =  ops?.options?.isCover ?? config.isCover
+        
+        this._onMouseUp = null;
+        this._onClick = null;
+        this._onSelected = null;
         this.onSelected = null;
         this.onClick = null;
+
         this._initEvent();
+        this._addEvent();
     }
-    _initEvent() {
+     
+    private _initEvent() {
         let that = this;
-        this._mouseUp = function (e: MouseEvent) {
-            that.captureSelection(undefined, e);
+
+        that._onMouseUp = function (e: MouseEvent) {
+            that._captureSelection(undefined, e);
         };
-        this._click = function (e: MouseEvent) {
+
+        that._onClick = function (e: MouseEvent) {
             if (e.target !== null && "dataset" in e.target) {
                 let selector = (e.target as HTMLTextAreaElement).dataset.selector;
                 if (selector) {
@@ -67,7 +52,8 @@ class textSelector {
                 }
             }
         };
-        this._selected = function (e: Selected | string) {
+
+        that._onSelected = function (e: Selected | string) {
             this.onSelected &&
                 this.onSelected({
                     code: typeof e === "string" ? -1 : 1,
@@ -77,50 +63,50 @@ class textSelector {
                     console.error(e)
                 }
         };
-        this.addEvent();
     }
-    addEvent() {
+
+    private _addEvent() {
         let that = this;
-        this.element.addEventListener("mouseup", function (e) {
-            that._mouseUp && that._mouseUp(e);
-        });
+        this._element.addEventListener("mouseup", this._onMouseUp as Listener);
     }
-    destroyEvent() {
+
+    private _destroyEvent() {
         let that = this;
-        this.element.removeEventListener("mouseup", function (e) {
-            that._mouseUp && that._mouseUp(e);
-        });
+        this._element.removeEventListener("mouseup", this._onMouseUp as Listener);
     }
-    fromStore(obj: SelectInfo[]): void {
+
+    renderStore(obj: SelectInfo[]): void {
         obj.map((item) => {
-            let startParentNode = Util.relativeNode(this.element, item.offset + 1);
+            let startParentNode = Util.relativeNode(this._element, item.offset + 1);
             let endParentNode = Util.relativeNode(
-                this.element,
+                this._element,
                 item.offset + item.text.length
             );
             if (endParentNode && startParentNode) {
-                this.captureSelection({
+                this._captureSelection({
                     collapsed: false,
-                    commonAncestorContainer: this.element,
+                    commonAncestorContainer: this._element,
                     endContainer: endParentNode,
                     endOffset:
                         item.offset +
                         item.text.length -
-                        Util.relativeOffset(endParentNode, this.element),
+                        Util.relativeOffset(endParentNode, this._element),
                     startContainer: startParentNode,
                     startOffset:
-                        item.offset - Util.relativeOffset(startParentNode, this.element),
+                        item.offset - Util.relativeOffset(startParentNode, this._element),
                     other: item,
                 });
             }
         });
     }
-    captureSelection(rangeNode?: rangeNode, e?: MouseEvent): void {
-        let selection = this.selection;
+
+    //捕获已选中节点
+    private _captureSelection(rangeNode?: rangeNode, e?: MouseEvent): void {
+        let selection = this._selection;
         if (selection == null) return;
         let range = rangeNode || selection.getRangeAt(0);
         if (range.collapsed) {
-            this._click && this._click(e);
+            this._onClick && this._onClick(e);
             return;
         }
         let r = {
@@ -141,14 +127,14 @@ class textSelector {
             (r.endContainer.parentNode as HTMLTextAreaElement).dataset.selector)
         ) {
             selection.removeAllRanges();
-            return this._selected && this._selected("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
+            return this._onSelected && this._onSelected("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
         } else {
             let endContainer = r.endContainer.splitText(r.endOffset);
             r.startContainer = r.startContainer.splitText(r.startOffset);
             r.endContainer = endContainer.previousSibling as Text;
         }
         let textNodes = Util.getTextNodes(range.commonAncestorContainer as Element);
-        const offset = Util.relativeOffset(r.startContainer, this.element);
+        const offset = Util.relativeOffset(r.startContainer, this._element);
         let rangeNodes = this.getSelectTextNode(textNodes, r);
         let text = "";
         for (let i = 0; i < rangeNodes.length; i++) {
@@ -160,8 +146,8 @@ class textSelector {
             firstRender = false;
             selection.removeAllRanges();
         }
-        this._selected &&
-            this._selected({
+        this._onSelected &&
+            this._onSelected({
                 nodes: rangeNodes,
                 other: rangeNode && rangeNode.other ? rangeNode.other : {},
                 text,
@@ -169,6 +155,7 @@ class textSelector {
                 firstRender,
             });
     }
+
     getSelectTextNode(textNodes: ChildNode[], range: rangeNode) {
         let startIndex = textNodes.indexOf(range.startContainer);
         let endIndex = textNodes.indexOf(range.endContainer);
@@ -177,6 +164,7 @@ class textSelector {
         });
         return rangeText;
     }
+
     repaintRange(eleArr: Element[], uuid: string, cssClass: string) {
         let uid = uuid || Util.Guid();
         eleArr.forEach((node) => {
@@ -190,6 +178,7 @@ class textSelector {
         });
         return uuid;
     }
+    
     clearRange(uuid: Number): void {
         let eleArr = document.querySelectorAll(`span[data-selector="${uuid}"]`);
         eleArr.forEach((node) => {

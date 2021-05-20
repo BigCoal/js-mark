@@ -3,25 +3,29 @@ import config from "./lib/config.js";
 var textSelector = (function () {
     function textSelector(ops) {
         var _a, _b;
-        this.element = ops.el;
-        var options = ops.options;
-        if ((_a = options === null || options === void 0 ? void 0 : options.isCover) !== null && _a !== void 0 ? _a : false) {
-            config.isCover = (_b = options === null || options === void 0 ? void 0 : options.isCover) !== null && _b !== void 0 ? _b : config.isCover;
+        this._element = ops.el;
+        this._selection = window.getSelection();
+        if (this._element.nodeType !== 1) {
+            throw new Error("请挂载dom节点");
         }
-        this.selection = window.getSelection();
-        this._mouseUp = null;
-        this._click = null;
-        this._selected = null;
+        if (!this._selection) {
+            throw new Error("浏览器暂不支持标注，请查看文档支持浏览器版本");
+        }
+        config.isCover = (_b = (_a = ops === null || ops === void 0 ? void 0 : ops.options) === null || _a === void 0 ? void 0 : _a.isCover) !== null && _b !== void 0 ? _b : config.isCover;
+        this._onMouseUp = null;
+        this._onClick = null;
+        this._onSelected = null;
         this.onSelected = null;
         this.onClick = null;
         this._initEvent();
+        this._addEvent();
     }
     textSelector.prototype._initEvent = function () {
         var that = this;
-        this._mouseUp = function (e) {
-            that.captureSelection(undefined, e);
+        that._onMouseUp = function (e) {
+            that._captureSelection(undefined, e);
         };
-        this._click = function (e) {
+        that._onClick = function (e) {
             if (e.target !== null && "dataset" in e.target) {
                 var selector = e.target.dataset.selector;
                 if (selector) {
@@ -30,7 +34,7 @@ var textSelector = (function () {
                 }
             }
         };
-        this._selected = function (e) {
+        that._onSelected = function (e) {
             this.onSelected &&
                 this.onSelected({
                     code: typeof e === "string" ? -1 : 1,
@@ -40,47 +44,42 @@ var textSelector = (function () {
                 console.error(e);
             }
         };
-        this.addEvent();
     };
-    textSelector.prototype.addEvent = function () {
+    textSelector.prototype._addEvent = function () {
         var that = this;
-        this.element.addEventListener("mouseup", function (e) {
-            that._mouseUp && that._mouseUp(e);
-        });
+        this._element.addEventListener("mouseup", this._onMouseUp);
     };
-    textSelector.prototype.destroyEvent = function () {
+    textSelector.prototype._destroyEvent = function () {
         var that = this;
-        this.element.removeEventListener("mouseup", function (e) {
-            that._mouseUp && that._mouseUp(e);
-        });
+        this._element.removeEventListener("mouseup", this._onMouseUp);
     };
-    textSelector.prototype.fromStore = function (obj) {
+    textSelector.prototype.renderStore = function (obj) {
         var _this = this;
         obj.map(function (item) {
-            var startParentNode = Util.relativeNode(_this.element, item.offset + 1);
-            var endParentNode = Util.relativeNode(_this.element, item.offset + item.text.length);
+            var startParentNode = Util.relativeNode(_this._element, item.offset + 1);
+            var endParentNode = Util.relativeNode(_this._element, item.offset + item.text.length);
             if (endParentNode && startParentNode) {
-                _this.captureSelection({
+                _this._captureSelection({
                     collapsed: false,
-                    commonAncestorContainer: _this.element,
+                    commonAncestorContainer: _this._element,
                     endContainer: endParentNode,
                     endOffset: item.offset +
                         item.text.length -
-                        Util.relativeOffset(endParentNode, _this.element),
+                        Util.relativeOffset(endParentNode, _this._element),
                     startContainer: startParentNode,
-                    startOffset: item.offset - Util.relativeOffset(startParentNode, _this.element),
+                    startOffset: item.offset - Util.relativeOffset(startParentNode, _this._element),
                     other: item,
                 });
             }
         });
     };
-    textSelector.prototype.captureSelection = function (rangeNode, e) {
-        var selection = this.selection;
+    textSelector.prototype._captureSelection = function (rangeNode, e) {
+        var selection = this._selection;
         if (selection == null)
             return;
         var range = rangeNode || selection.getRangeAt(0);
         if (range.collapsed) {
-            this._click && this._click(e);
+            this._onClick && this._onClick(e);
             return;
         }
         var r = {
@@ -100,7 +99,7 @@ var textSelector = (function () {
                 .selector ||
                 r.endContainer.parentNode.dataset.selector)) {
             selection.removeAllRanges();
-            return this._selected && this._selected("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
+            return this._onSelected && this._onSelected("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
         }
         else {
             var endContainer = r.endContainer.splitText(r.endOffset);
@@ -108,7 +107,7 @@ var textSelector = (function () {
             r.endContainer = endContainer.previousSibling;
         }
         var textNodes = Util.getTextNodes(range.commonAncestorContainer);
-        var offset = Util.relativeOffset(r.startContainer, this.element);
+        var offset = Util.relativeOffset(r.startContainer, this._element);
         var rangeNodes = this.getSelectTextNode(textNodes, r);
         var text = "";
         for (var i = 0; i < rangeNodes.length; i++) {
@@ -120,8 +119,8 @@ var textSelector = (function () {
             firstRender = false;
             selection.removeAllRanges();
         }
-        this._selected &&
-            this._selected({
+        this._onSelected &&
+            this._onSelected({
                 nodes: rangeNodes,
                 other: rangeNode && rangeNode.other ? rangeNode.other : {},
                 text: text,
