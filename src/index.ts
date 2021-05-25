@@ -66,12 +66,10 @@ class textSelector {
     }
 
     private _addEvent() {
-        let that = this;
         this._element.addEventListener("mouseup", this._onMouseUp as Listener);
     }
 
     private _destroyEvent() {
-        let that = this;
         this._element.removeEventListener("mouseup", this._onMouseUp as Listener);
     }
 
@@ -100,6 +98,10 @@ class textSelector {
         });
     }
 
+    findWord(word:string){
+        return Util.relativeOffsetChat(word, this._element)
+    }
+
     //捕获已选中节点
     private _captureSelection(rangeNode?: rangeNode, e?: MouseEvent): void {
         let selection = this._selection;
@@ -115,12 +117,8 @@ class textSelector {
             startOffset: range.startOffset,
             endOffset: range.endOffset,
         };
-        if (config.isCover && r.startContainer !== r.endContainer) {
-            selection.removeAllRanges();
-            let endContainer = r.endContainer.splitText(r.endOffset);
-            r.endContainer = endContainer.previousSibling as Text;
-            r.startContainer = r.startContainer.splitText(r.startOffset);
-        } else if (
+
+        if (
             !config.isCover &&
                 ((r.startContainer.parentNode as HTMLTextAreaElement).dataset
                     .selector ||
@@ -128,7 +126,14 @@ class textSelector {
         ) {
             selection.removeAllRanges();
             return this._onSelected && this._onSelected("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
-        } else {
+        }
+
+        if (r.startContainer !== r.endContainer) {
+            selection.removeAllRanges();
+            let endContainer = r.endContainer.splitText(r.endOffset);
+            r.endContainer = endContainer.previousSibling as Text;
+            r.startContainer = r.startContainer.splitText(r.startOffset);
+        }  else {
             let endContainer = r.endContainer.splitText(r.endOffset);
             r.startContainer = r.startContainer.splitText(r.startOffset);
             r.endContainer = endContainer.previousSibling as Text;

@@ -1,7 +1,7 @@
 import * as Util from "./util/index.js";
 import config from "./lib/config.js";
-var textSelector = (function () {
-    function textSelector(ops) {
+class textSelector {
+    constructor(ops) {
         var _a, _b;
         this._element = ops.el;
         this._selection = window.getSelection();
@@ -20,16 +20,16 @@ var textSelector = (function () {
         this._initEvent();
         this._addEvent();
     }
-    textSelector.prototype._initEvent = function () {
-        var that = this;
+    _initEvent() {
+        let that = this;
         that._onMouseUp = function (e) {
             that._captureSelection(undefined, e);
         };
         that._onClick = function (e) {
             if (e.target !== null && "dataset" in e.target) {
-                var selector = e.target.dataset.selector;
+                let selector = e.target.dataset.selector;
                 if (selector) {
-                    var doms = document.querySelectorAll("span[data-selector=\"" + selector + "\"]");
+                    let doms = document.querySelectorAll(`span[data-selector="${selector}"]`);
                     that.onClick && that.onClick(doms);
                 }
             }
@@ -44,77 +44,77 @@ var textSelector = (function () {
                 console.error(e);
             }
         };
-    };
-    textSelector.prototype._addEvent = function () {
-        var that = this;
+    }
+    _addEvent() {
         this._element.addEventListener("mouseup", this._onMouseUp);
-    };
-    textSelector.prototype._destroyEvent = function () {
-        var that = this;
+    }
+    _destroyEvent() {
         this._element.removeEventListener("mouseup", this._onMouseUp);
-    };
-    textSelector.prototype.renderStore = function (obj) {
-        var _this = this;
-        obj.map(function (item) {
-            var startParentNode = Util.relativeNode(_this._element, item.offset + 1);
-            var endParentNode = Util.relativeNode(_this._element, item.offset + item.text.length);
+    }
+    renderStore(obj) {
+        obj.map((item) => {
+            let startParentNode = Util.relativeNode(this._element, item.offset + 1);
+            let endParentNode = Util.relativeNode(this._element, item.offset + item.text.length);
             if (endParentNode && startParentNode) {
-                _this._captureSelection({
+                this._captureSelection({
                     collapsed: false,
-                    commonAncestorContainer: _this._element,
+                    commonAncestorContainer: this._element,
                     endContainer: endParentNode,
                     endOffset: item.offset +
                         item.text.length -
-                        Util.relativeOffset(endParentNode, _this._element),
+                        Util.relativeOffset(endParentNode, this._element),
                     startContainer: startParentNode,
-                    startOffset: item.offset - Util.relativeOffset(startParentNode, _this._element),
+                    startOffset: item.offset - Util.relativeOffset(startParentNode, this._element),
                     other: item,
                 });
             }
         });
-    };
-    textSelector.prototype._captureSelection = function (rangeNode, e) {
-        var selection = this._selection;
+    }
+    findWord(word) {
+        return Util.relativeOffsetChat(word, this._element);
+    }
+    _captureSelection(rangeNode, e) {
+        let selection = this._selection;
         if (selection == null)
             return;
-        var range = rangeNode || selection.getRangeAt(0);
+        let range = rangeNode || selection.getRangeAt(0);
         if (range.collapsed) {
             this._onClick && this._onClick(e);
             return;
         }
-        var r = {
+        let r = {
             startContainer: range.startContainer,
             endContainer: range.endContainer,
             startOffset: range.startOffset,
             endOffset: range.endOffset,
         };
-        if (config.isCover && r.startContainer !== r.endContainer) {
-            selection.removeAllRanges();
-            var endContainer = r.endContainer.splitText(r.endOffset);
-            r.endContainer = endContainer.previousSibling;
-            r.startContainer = r.startContainer.splitText(r.startOffset);
-        }
-        else if (!config.isCover &&
+        if (!config.isCover &&
             (r.startContainer.parentNode.dataset
                 .selector ||
                 r.endContainer.parentNode.dataset.selector)) {
             selection.removeAllRanges();
             return this._onSelected && this._onSelected("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
         }
+        if (r.startContainer !== r.endContainer) {
+            selection.removeAllRanges();
+            let endContainer = r.endContainer.splitText(r.endOffset);
+            r.endContainer = endContainer.previousSibling;
+            r.startContainer = r.startContainer.splitText(r.startOffset);
+        }
         else {
-            var endContainer = r.endContainer.splitText(r.endOffset);
+            let endContainer = r.endContainer.splitText(r.endOffset);
             r.startContainer = r.startContainer.splitText(r.startOffset);
             r.endContainer = endContainer.previousSibling;
         }
-        var textNodes = Util.getTextNodes(range.commonAncestorContainer);
-        var offset = Util.relativeOffset(r.startContainer, this._element);
-        var rangeNodes = this.getSelectTextNode(textNodes, r);
-        var text = "";
-        for (var i = 0; i < rangeNodes.length; i++) {
-            var e_1 = rangeNodes[i];
-            text += e_1.nodeValue;
+        let textNodes = Util.getTextNodes(range.commonAncestorContainer);
+        const offset = Util.relativeOffset(r.startContainer, this._element);
+        let rangeNodes = this.getSelectTextNode(textNodes, r);
+        let text = "";
+        for (let i = 0; i < rangeNodes.length; i++) {
+            const e = rangeNodes[i];
+            text += e.nodeValue;
         }
-        var firstRender = true;
+        let firstRender = true;
         if (!rangeNode) {
             firstRender = false;
             selection.removeAllRanges();
@@ -123,24 +123,24 @@ var textSelector = (function () {
             this._onSelected({
                 nodes: rangeNodes,
                 other: rangeNode && rangeNode.other ? rangeNode.other : {},
-                text: text,
-                offset: offset,
-                firstRender: firstRender,
+                text,
+                offset,
+                firstRender,
             });
-    };
-    textSelector.prototype.getSelectTextNode = function (textNodes, range) {
-        var startIndex = textNodes.indexOf(range.startContainer);
-        var endIndex = textNodes.indexOf(range.endContainer);
-        var rangeText = textNodes.filter(function (item, i) {
+    }
+    getSelectTextNode(textNodes, range) {
+        let startIndex = textNodes.indexOf(range.startContainer);
+        let endIndex = textNodes.indexOf(range.endContainer);
+        let rangeText = textNodes.filter((item, i) => {
             return startIndex <= i && endIndex >= i;
         });
         return rangeText;
-    };
-    textSelector.prototype.repaintRange = function (eleArr, uuid, cssClass) {
-        var uid = uuid || Util.Guid();
-        eleArr.forEach(function (node) {
+    }
+    repaintRange(eleArr, uuid, cssClass) {
+        let uid = uuid || Util.Guid();
+        eleArr.forEach((node) => {
             if (node.parentNode) {
-                var hl = document.createElement("span");
+                let hl = document.createElement("span");
                 hl.className = cssClass;
                 hl.setAttribute("data-selector", uid);
                 node.parentNode.replaceChild(hl, node);
@@ -148,21 +148,20 @@ var textSelector = (function () {
             }
         });
         return uuid;
-    };
-    textSelector.prototype.clearRange = function (uuid) {
-        var eleArr = document.querySelectorAll("span[data-selector=\"" + uuid + "\"]");
-        eleArr.forEach(function (node) {
+    }
+    clearRange(uuid) {
+        let eleArr = document.querySelectorAll(`span[data-selector="${uuid}"]`);
+        eleArr.forEach((node) => {
             if (node.parentNode) {
-                var fragment = document.createDocumentFragment();
-                var childNodes = node.childNodes;
-                for (var i = 0; i < childNodes.length; i++) {
-                    var node_1 = childNodes[i];
-                    fragment.appendChild(node_1.cloneNode(true));
+                const fragment = document.createDocumentFragment();
+                let childNodes = node.childNodes;
+                for (let i = 0; i < childNodes.length; i++) {
+                    const node = childNodes[i];
+                    fragment.appendChild(node.cloneNode(true));
                 }
                 node.parentNode.replaceChild(fragment, node);
             }
         });
-    };
-    return textSelector;
-}());
+    }
+}
 export default textSelector;

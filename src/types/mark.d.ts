@@ -1,7 +1,7 @@
 interface SelectInfo {
-    offset: number;
-    text: string;
-    uuid?: string;
+    offset: number;  //偏移量
+    text: string;   //文本信息
+    uuid?: string;  //唯一id
 }
 
 interface rangeNode {

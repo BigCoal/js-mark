@@ -1,14 +1,7 @@
-Annotator
+# js-mark
 =========
 
-|Build Status| |Version on NPM| |IRC Channel|
-
-|Build Matrix|
-
-Annotator is a JavaScript library for building annotation applications in
-browsers. It provides a set of interoperable tools for annotating content in
-webpages. For a simple demonstration, visit the `Annotator home page`_ or
-download a tagged release of Annotator from `the releases page`_ and open
+js-mark是一个JavaScript库，用于在浏览器。它提供了一组可交互操作的工具来注释网页内容。
 ``demo.html``.
 
 .. _Annotator home page: http://annotatorjs.org/

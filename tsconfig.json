@@ -4,7 +4,7 @@
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
     "rootDir": "./src",
     "outDir": "./build",
-    "target": "es5",
+    "target": "es2019",
     "allowJs":true,
     "removeComments": true,
     "strict": true,
