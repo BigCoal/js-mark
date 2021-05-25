@@ -99,6 +99,7 @@ class textSelector {
     }
 
     findWord(word:string){
+        if(!word) return;
         return Util.relativeOffsetChat(word, this._element)
     }
 

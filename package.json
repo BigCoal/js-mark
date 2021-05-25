@@ -1,10 +1,10 @@
 {
   "name": "js-mark",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "js节点高亮插件，文本标注",
   "license": "ISC",
   "author": "BigCoal <1048506792@qq.com>",
-  "main": "dist/js-annotation.js",
+  "main": "dist/js-mark.js",
   "homepage": "https://github.com/know-vampire/js-annotation.git",
   "scripts": {
     "build": "npm-run-all  build:*",

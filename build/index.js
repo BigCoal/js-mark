@@ -71,6 +71,8 @@ class textSelector {
         });
     }
     findWord(word) {
+        if (!word)
+            return;
         return Util.relativeOffsetChat(word, this._element);
     }
     _captureSelection(rangeNode, e) {
