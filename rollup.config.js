@@ -12,7 +12,7 @@ const inputOptions = {
 const outputOptions = {
     file: resolve("dist/js-mark.js"), 
     format: "umd", 
-    name: "textSelector"
+    name: "JsMark"
 };
 
 export default {

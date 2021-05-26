@@ -1,7 +1,7 @@
 import * as Util from "./util/index.js";
 import config from "./lib/config.js";
 
-class jsMark {
+class JsMark {
     private _element: Element;
     private _selection: Nullable<Selection>;
     private _onMouseUp:Nullable<Listener>;
@@ -197,4 +197,4 @@ class jsMark {
         });
     }
 }
-export default jsMark;
+export default JsMark;

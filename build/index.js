@@ -1,6 +1,6 @@
 import * as Util from "./util/index.js";
 import config from "./lib/config.js";
-class jsMark {
+class JsMark {
     constructor(ops) {
         var _a, _b;
         this._element = ops.el;
@@ -164,4 +164,4 @@ class jsMark {
         });
     }
 }
-export default jsMark;
+export default JsMark;
