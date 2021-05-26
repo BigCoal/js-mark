@@ -1,87 +1,80 @@
+
 # js-mark
-=========
-
-js-mark是一个JavaScript库，用于在浏览器。它提供了一组可交互操作的工具来注释网页内容。
-``demo.html``.
-
-.. _Annotator home page: http://annotatorjs.org/
-.. _the releases page: https://github.com/openannotation/annotator/releases
-
-Components within Annotator provide:
-
--  user interface: components to create, edit, and display annotations in a
-   browser.
--  persistence: storage components help you save your annotations to a remote
-   server.
--  authorization and identity: integrate Annotator with your application's login
-   and permissions systems.
-
-.. _Dublin Core tags: http://dublincore.org/
-.. _Facebook Open Graph: https://developers.facebook.com/docs/opengraph
 
 
-Usage
------
 
-See Installing_ and `Configuring and using Annotator`_ from the documentation_.
+## 说明
 
-.. _Installing: http://docs.annotatorjs.org/en/latest/installing.html
-.. _Configuring and using Annotator: http://docs.annotatorjs.org/en/latest/usage.html
-.. _documentation: http://docs.annotatorjs.org/en/latest/
-
-
-Writing a module
-----------------
-
-See `Module development`_.
-
-.. _Module development: http://docs.annotatorjs.org/en/latest/module-development.html
+<html>
+<span style="background:rgba(0, 0, 255, 0.3);">js-mark是一个JavaScript库，用于在浏览器。他是一个可以在任何网页做标记的前端库,</span>
+<span style="background:rgba(255, 255, 0, 0.3);">它提供了一组可交互操作的工具来注释网页内容。</span><span style="background:rgba(0, 255, 127, 0.3);">支持标记文本和</span><span style="background:rgba(255, 0, 0, 0.3);">持久化存储与还原</span>
+</html>
 
 
-Development
------------
 
-See `HACKING.rst <./HACKING.rst>`__.
+## Demo
+如果进行简单的演示，可以打开``example/demo.html``运行方可查看演示效果
+
+## 安装
+#### 方法一
+ ``npm install js-mark``
+#### 方法二
+使用静态文件,把``dist/js-mark.js``静态文件直接放到项目中
+
+## 文档
+
+### 基本配置
+
+```
+ import JsMark from "js-mark";
+ const jsMark = new jsMark(${opts})
+```
+创建一个新的jsMark实例,opts 会合并至默认配置 (如下所示).
+```
+{
+    el:${dom}，
+    options:{
+        isCover:false
+    }
+}
+```
+
+配置说明：
+参数名|类型|描述|是否必须|默认值
+--|--|--|--|--|--
+el | Document | 标记的根节点元素 | 是 | null
+options | Object | 配置项(详细如下) | 否 | null
+
+``options``配置说明：
+参数名|类型|描述|是否必须|默认值
+--|--|--|--|--|--
+isCover | Boolean | 标记内容是否可以覆盖 | 否 | true
 
 
-Reporting a bug
----------------
+### 实例方法
+##### 1.鼠标选中文本后的回调方法：``jsMark.onSelected(Selected)``
+当鼠标选中根节点下的文本时会触发此方法，该方法回调返回一个Selected已选中对象
+```
+interface Selected {
+    nodes: Element[]; //
+    text: string;
+    offset: number;
+    firstRender: boolean;
+}
+```
+##### 1.标注选中文本：``jsMark.repaintRange()``
 
-Please report bugs using the `GitHub issue tracker`_. Please be sure to use the
-search facility to see if anyone else has reported the same bug -- don't submit
-duplicates.
+##### 2.点击已经标注文本后的回调方法：``jsMark.onClick()``
+##### 3.通过数据去标注根节点下的数据：``jsMark.renderStore()``
+##### 4.查找跟节点下的单个词组：``jsMark.findWord()``
+##### 5.查找跟节点下的多个词组：``jsMark.findWordArr()``
+##### 6.清除单个标注：``jsMark.clearMark()``
+##### 7.清除所有标注：``jsMark.clearMarkAll()``
 
-Please endeavour to follow `good practice for reporting bugs`_ when you submit
-an issue.
-
-Lastly, if you need support or have a question about Annotator, please **do not
-use the issue tracker**. Instead, you are encouraged to email the `mailing
-list`_.
-
-.. _GitHub issue tracker: https://github.com/openannotation/annotator/issues
-.. _good practice for reporting bugs: http://www.chiark.greenend.org.uk/~sgtatham/bugs.html
-
-
-Community
----------
-
-The Annotator project has a `mailing list`_, ``annotator-dev``, which you're
-encouraged to use for any questions and discussions. It is archived for easy
-browsing and search at `gmane.comp.web.annotator`_. We can also be found in
-|IRC|_.
-
-.. _mailing list: https://lists.okfn.org/mailman/listinfo/annotator-dev
-.. _gmane.comp.web.annotator: http://dir.gmane.org/gmane.comp.web.annotator
-.. |IRC| replace:: the ``#annotator`` channel on Freenode
-.. _IRC: https://webchat.freenode.net/?channels=#annotator
+## 兼容性
 
 
-.. |Build Status| image:: https://secure.travis-ci.org/openannotation/annotator.svg?branch=master
-   :target: http://travis-ci.org/openannotation/annotator
-.. |Version on NPM| image:: http://img.shields.io/npm/v/annotator.svg
-   :target: https://www.npmjs.org/package/annotator
-.. |Build Matrix| image:: https://saucelabs.com/browser-matrix/hypothesisannotator.svg
-   :target: https://saucelabs.com/u/hypothesisannotator
-.. |IRC Channel| image:: https://img.shields.io/badge/IRC-%23annotator-blue.svg
-   :target: https://www.irccloud.com/invite?channel=%23annotator&amp;hostname=irc.freenode.net&amp;port=6697&amp;ssl=1
-   :alt: #hypothes.is IRC channel
+IE | Firefox| Chrome| Safari| Opera
+---|---|---|---|---
+10+ | 52+ |15+|5.1+|15+
+
