@@ -1,40 +1,15 @@
 <div>
-    <h1 align="center"><code>Web Highlighter</code>&nbsp;&nbsp;🖍️</h1>
+    <h1 align="center"><code>js-mark</code>&nbsp;&nbsp;🖍️</h1>
     <p align="center">
-        <strong>✨ 一个可以在任何网页上做高亮笔记前端库，支持高亮文本的持久化存储与还原 ✨🖍️</strong>
+        <strong>✨ 它提供了一组可交互操作的工具来注释网页内容 ✨🖍️</strong>
     </p>
-    <img src="https://raw.githubusercontent.com/alienzhou/web-highlighter/master/docs/img/logo.png">
-    <p align="center">
-        <a href="https://travis-ci.org/alienzhou/web-highlighter" target="_blank">
-            <img src="https://api.travis-ci.org/alienzhou/web-highlighter.svg?branch=master" alt="Build status" />
-        </a>
-        <a href="https://www.npmjs.com/package/web-highlighter" target="_blank">
-            <img src="https://img.shields.io/npm/v/web-highlighter.svg" alt="NPM version" />
-        </a>
-        <a href='https://coveralls.io/github/alienzhou/web-highlighter?branch=master'>
-            <img src='https://coveralls.io/repos/github/alienzhou/web-highlighter/badge.svg?branch=master' alt='Coverage Status' />
-        </a>
-        <a href="https://unpkg.com/web-highlighter" target="_blank">
-            <img src="https://img.badgesize.io/https://unpkg.com/web-highlighter/dist/web-highlighter.min.js?compression=gzip" alt="Gzip size" />
-        </a>
-        <a href="https://codebeat.co/projects/github-com-alienzhou-web-highlighter-master" target="_blank">
-            <img src="https://codebeat.co/badges/f5a18a9b-9765-420e-a17f-fa0b54b3a125" alt="Codebeat" />
-        </a>
-        <a href="https://opensource.org/licenses/mit-license.php" target="_blank">
-            <img src="https://img.shields.io/github/license/alienzhou/web-highlighter" alt="MIT Licence" />
-        </a>
+    <p>
+        <span style="background:rgba(0, 0, 255, 0.3);">js-mark是一个JavaScript库，用于在浏览器。他是一个可以在任何网页做标记的前端库,</span>
+        <span style="background:rgba(255, 255, 0, 0.3);">它提供了一组可交互操作的工具来注释网页内容。</span>
+        <span style="background:rgba(0, 255, 127, 0.3);">支持标记文本和</span>
+        <span style="background:rgba(255, 0, 0, 0.3);">持久化存储与还原</span>
     </p>
 </div>
-
-
-
-<div>
-    <span style="background:rgba(0, 0, 255, 0.3);">js-mark是一个JavaScript库，用于在浏览器。他是一个可以在任何网页做标记的前端库,</span>
-    <span style="background:rgba(255, 255, 0, 0.3);">它提供了一组可交互操作的工具来注释网页内容。</span>
-    <span style="background:rgba(0, 255, 127, 0.3);">支持标记文本和</span>
-    <span style="background:rgba(255, 0, 0, 0.3);">持久化存储与还原</span>
-</div>
-
 
 
 ## Demo
@@ -76,7 +51,7 @@
 ``options``配置说明：
 
 |参数名|类型|描述|是否必须|默认值
-|--|--|--|--|--|--
+|---|---|---|---|---
 |isCover | Boolean | 标记内容是否可以覆盖 | 否 | true
 
 
