@@ -30,26 +30,45 @@
 
 <body>
     <div id="highlight">
-        <article class="article" style="margin-bottom: 3rem; padding: 2rem 0px 0px; color: #333333; font-family: -apple-system, system-ui, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif, system-ui, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial; font-size: 12px;" data-entry-id="6966049183698534414" data-draft-id="6966048666557775886" data-original-type="0" data-v-f84b151e="" data-v-39f74d6b="">
-            <h1 class="article-title" style="font-size: 2.5rem; margin: 0.67em 0px; line-height: 1.5;" data-v-f84b151e="">S6的解构赋值是深拷贝or浅拷贝?</h1>
+        <article class="article"
+            style="margin-bottom: 3rem; padding: 2rem 0px 0px; color: #333333; font-family: -apple-system, system-ui, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif, system-ui, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial; font-size: 12px;"
+            data-entry-id="6966049183698534414" data-draft-id="6966048666557775886" data-original-type="0"
+            data-v-f84b151e="" data-v-39f74d6b="">
+            <h1 class="article-title" style="font-size: 2.5rem; margin: 0.67em 0px; line-height: 1.5;"
+                data-v-f84b151e="">S6的解构赋值是深拷贝or浅拷贝?</h1>
             <div class="article-content" data-v-f84b151e="">
-            <div class="markdown-body" style="word-break: break-word; line-height: 1.75; font-size: 15px; overflow-x: hidden;">
-            <blockquote style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
-            <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">面试时候有面试官问到ES6的解构赋值是深拷贝还是浅拷贝?，这里做一个总结.</p>
-            </blockquote>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">ES6的解构赋值，大家应该都清楚，就是可以快速取出数组或者对象中的值；我们先来看一个使用案例：</p>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;"><img class="medium-zoom-image" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/623890ff103d494fa9f966465ff5075c~tplv-k3u1fbpfcp-zoom-1.image" /></p>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">更多的解构赋值知识可以查看:&nbsp;<a target="_blank" href="https://es6.ruanyifeng.com/#docs/destructuring" rel="noopener">es6.ruanyifeng.com/#docs/destr&hellip;</a></p>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">那么，ES6的解构赋值到底是深拷贝还是浅拷贝呢?</p>
-            <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;" data-id="heading-0">我们先来看一下深拷贝和浅拷贝的定义</h3>
-            <blockquote style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
-            <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">深拷贝：修改新变量的值不会影响原有变量的值。默认情况下基本数据类型（number，string，null，undefined，boolean）都是深拷贝。</p>
-            </blockquote>
-            <blockquote style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
-            <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">浅拷贝：修改新变量的值会影响原有的变量的值。默认情况下引用类型（object）都是浅拷贝。</p>
-            </blockquote>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">我们先开看一个基本类型，直接用等号赋值的例子</p>
-            <pre style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">let user = 'siri'
+                <div class="markdown-body"
+                    style="word-break: break-word; line-height: 1.75; font-size: 15px; overflow-x: hidden;">
+                    <blockquote
+                        style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
+                        <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">
+                            面试时候有面试官问到ES6的解构赋值是深拷贝还是浅拷贝?，这里做一个总结.</p>
+                    </blockquote>
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">
+                        ES6的解构赋值，大家应该都清楚，就是可以快速取出数组或者对象中的值；我们先来看一个使用案例：</p>
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;"><img
+                            class="medium-zoom-image"
+                            src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/623890ff103d494fa9f966465ff5075c~tplv-k3u1fbpfcp-zoom-1.image" />
+                    </p>
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">更多的解构赋值知识可以查看:&nbsp;<a
+                            target="_blank" href="https://es6.ruanyifeng.com/#docs/destructuring"
+                            rel="noopener">es6.ruanyifeng.com/#docs/destr&hellip;</a></p>
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">那么，ES6的解构赋值到底是深拷贝还是浅拷贝呢?</p>
+                    <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;"
+                        data-id="heading-0">我们先来看一下深拷贝和浅拷贝的定义</h3>
+                    <blockquote
+                        style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
+                        <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">
+                            深拷贝：修改新变量的值不会影响原有变量的值。默认情况下基本数据类型（number，string，null，undefined，boolean）都是深拷贝。</p>
+                    </blockquote>
+                    <blockquote
+                        style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
+                        <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">
+                            浅拷贝：修改新变量的值会影响原有的变量的值。默认情况下引用类型（object）都是浅拷贝。</p>
+                    </blockquote>
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">我们先开看一个基本类型，直接用等号赋值的例子</p>
+                    <pre
+                        style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">let user = 'siri'
             let stu = user
             stu = 'jack'
             console.log('输出：',stu)
@@ -58,12 +77,16 @@
             // 输出：siri
             
             <span class="copy-code-btn">复制代码</span></code></pre>
-            <blockquote style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
-            <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">由上方的例子可以知道：</p>
-            </blockquote>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">stu的数值改变并不会影响user ,所以基本数据类型，直接用等号赋值，也都是深拷贝；</p>
-            <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;" data-id="heading-1">我们再看一个引用类型，直接用等号赋值的例子</h3>
-            <pre style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">let obj1 = {
+                    <blockquote
+                        style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
+                        <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">由上方的例子可以知道：</p>
+                    </blockquote>
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">stu的数值改变并不会影响user
+                        ,所以基本数据类型，直接用等号赋值，也都是深拷贝；</p>
+                    <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;"
+                        data-id="heading-1">我们再看一个引用类型，直接用等号赋值的例子</h3>
+                    <pre
+                        style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">let obj1 = {
               name:'siri',
               age:18
             }
@@ -76,13 +99,22 @@
             // obj2 {name: "jack", age: 18}
             
             <span class="copy-code-btn">复制代码</span></code></pre>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;"><img class="medium-zoom-image" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c66284c472c64b2d9103747a46b84d2b~tplv-k3u1fbpfcp-zoom-1.image" /></p>
-            <blockquote style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
-            <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">上方例子中我们可以看到，obj1赋值给obj2,然后改变obj2中的name值，发现obj2中的name也跟随着改变了，所以是浅拷贝。（因为他们引用的是同一个地址的数据！拷贝的时候并没有给obj2创造独立的内存，只是把obj1指向数据的&nbsp;指针&nbsp;拷贝给了obj2）</p>
-            </blockquote>
-            <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;" data-id="heading-2">上方的例子了解了之后 我们再回到解构赋值</h3>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">修改最上方的解构赋值代码，给name 和 age赋值</p>
-            <pre style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">const userInfo = {
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;"><img
+                            class="medium-zoom-image"
+                            src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c66284c472c64b2d9103747a46b84d2b~tplv-k3u1fbpfcp-zoom-1.image" />
+                    </p>
+                    <blockquote
+                        style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
+                        <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">
+                            上方例子中我们可以看到，obj1赋值给obj2,然后改变obj2中的name值，发现obj2中的name也跟随着改变了，所以是浅拷贝。（因为他们引用的是同一个地址的数据！拷贝的时候并没有给obj2创造独立的内存，只是把obj1指向数据的&nbsp;指针&nbsp;拷贝给了obj2）
+                        </p>
+                    </blockquote>
+                    <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;"
+                        data-id="heading-2">上方的例子了解了之后 我们再回到解构赋值</h3>
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">修改最上方的解构赋值代码，给name 和 age赋值
+                    </p>
+                    <pre
+                        style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">const userInfo = {
                name:'siri',
               age:18
             }
@@ -92,9 +124,14 @@
             console.log('打印userInfo',userInfo)
             // 打印userInfo {name: "siri", age: 18}
             <span class="copy-code-btn">复制代码</span></code></pre>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">&nbsp;我们发现userInfo 的数据并没有被改变，有同学会说，解构赋值好像是深拷贝啊？？？？？&nbsp;<img class="medium-zoom-image" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d6df934ac3fd4030a7ab0618e7840c14~tplv-k3u1fbpfcp-zoom-1.image" /></p>
-            <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;" data-id="heading-3">我们再修改一下代码看看</h3>
-            <pre style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">const userInfo = {
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">&nbsp;我们发现userInfo
+                        的数据并没有被改变，有同学会说，解构赋值好像是深拷贝啊？？？？？&nbsp;<img class="medium-zoom-image"
+                            src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d6df934ac3fd4030a7ab0618e7840c14~tplv-k3u1fbpfcp-zoom-1.image" />
+                    </p>
+                    <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;"
+                        data-id="heading-3">我们再修改一下代码看看</h3>
+                    <pre
+                        style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">const userInfo = {
                 name:'siri',
                 age:18,
                 detail:{
@@ -109,24 +146,34 @@
             console.log('打印userInfo',userInfo)
             
             <span class="copy-code-btn">复制代码</span></code></pre>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">打印信息：</p>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;"><img class="medium-zoom-image" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f981a3907bf540df8d4ce606e7ab767e~tplv-k3u1fbpfcp-zoom-1.image" /></p>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">&nbsp;发现解构赋值出来的对象将原对象detail中的qq的数据修改了，这样看还是浅拷贝；</p>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">###总结：</p>
-            <ul style="padding: 0px 0px 0px 28px; margin: 0px;">
-            <li style="list-style: inherit; margin-bottom: 0px;">
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">解构赋值，如果所解构的原对象是一维数组或对象，其本质就是对基本数据类型进行等号赋值，那它就是深拷贝；</p>
-            </li>
-            <li style="list-style: inherit; margin-bottom: 0px;">
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">如果是多维数组或对象，其本质就是对引用类型数据进项等号赋值，那它就是浅拷贝；</p>
-            </li>
-            </ul>
-            <blockquote style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
-            <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">结论：解构赋值是浅拷贝（因为它确实不能对多维数组或对象达到深拷贝的作用）；</p>
-            </blockquote>
-            <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;" data-id="heading-4">深拷贝的实现方法</h3>
-            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">本质还是将对象拆开为基本数据类型进行赋值。</p>
-            <pre style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">function deepClone(source){
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">打印信息：</p>
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;"><img
+                            class="medium-zoom-image"
+                            src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f981a3907bf540df8d4ce606e7ab767e~tplv-k3u1fbpfcp-zoom-1.image" />
+                    </p>
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">
+                        &nbsp;发现解构赋值出来的对象将原对象detail中的qq的数据修改了，这样看还是浅拷贝；</p>
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">###总结：</p>
+                    <ul style="padding: 0px 0px 0px 28px; margin: 0px;">
+                        <li style="list-style: inherit; margin-bottom: 0px;">
+                            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">
+                                解构赋值，如果所解构的原对象是一维数组或对象，其本质就是对基本数据类型进行等号赋值，那它就是深拷贝；</p>
+                        </li>
+                        <li style="list-style: inherit; margin-bottom: 0px;">
+                            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">
+                                如果是多维数组或对象，其本质就是对引用类型数据进项等号赋值，那它就是浅拷贝；</p>
+                        </li>
+                    </ul>
+                    <blockquote
+                        style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
+                        <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">
+                            结论：解构赋值是浅拷贝（因为它确实不能对多维数组或对象达到深拷贝的作用）；</p>
+                    </blockquote>
+                    <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;"
+                        data-id="heading-4">深拷贝的实现方法</h3>
+                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">本质还是将对象拆开为基本数据类型进行赋值。</p>
+                    <pre
+                        style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">function deepClone(source){
               const targetObj = source.constructor === Array ? [] : {}; // 判断复制的目标是数组还是对象
               for(let keys in source){ // 遍历目标
                 if(source.hasOwnProperty(keys)){
@@ -141,12 +188,16 @@
               return targetObj;
             }
             <span class="copy-code-btn">复制代码</span></code></pre>
+                </div>
             </div>
-            </div>
-            </article>
-            <div class="tag-list-box" style="display: flex; flex-wrap: wrap; align-items: flex-start; margin-bottom: 2rem; padding-top: 2rem; border-top: 1px solid #e5e6eb; color: #333333; font-family: -apple-system, system-ui, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif, system-ui, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial; font-size: 12px;" data-v-39f74d6b="" data-v-f84b151e="">
-            <div class="tag-list" style="display: flex; font-size: 1.167rem; line-height: 2.286; margin-right: 1.42rem; flex-shrink: 0;" data-v-39f74d6b="" data-v-f84b151e=""></div>
-            </div>
+        </article>
+        <div class="tag-list-box"
+            style="display: flex; flex-wrap: wrap; align-items: flex-start; margin-bottom: 2rem; padding-top: 2rem; border-top: 1px solid #e5e6eb; color: #333333; font-family: -apple-system, system-ui, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif, system-ui, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial; font-size: 12px;"
+            data-v-39f74d6b="" data-v-f84b151e="">
+            <div class="tag-list"
+                style="display: flex; font-size: 1.167rem; line-height: 2.286; margin-right: 1.42rem; flex-shrink: 0;"
+                data-v-39f74d6b="" data-v-f84b151e=""></div>
+        </div>
     </div>
     <script src="../dist/js-mark.js"></script>
     <script type="module">
@@ -173,36 +224,33 @@
                 "annotator-h3",
             ];
 
-            let textDom = document.querySelector("#highlight");
             let jsMark = new JsMark({
-                el:textDom,
-                options:{
-                    isCover:true
-                }
+                el: document.querySelector("#highlight")
             });
             //选中文本后回调
             jsMark.onSelected = function (res) {
-                console.log(res)
-                    let data = res;
-                    let uid = data.other.uuid;
-                    let uuid = jsMark.repaintRange(data.nodes,uid, cssStyle[cssIndex]);
-                    ++cssIndex >= cssStyle.length ? (cssIndex = 0) : cssIndex;
-                    if (!data.firstRender) {
-                        setLocal({
-                            offset: data.offset,
-                            text: data.text,
-                            uuid,
-                        });
-                    }
+                let uuid = jsMark.repaintRange({
+                    textNodes: res.textNodes,
+                    className: cssStyle[cssIndex]
+                });
+                ++cssIndex >= cssStyle.length ? (cssIndex = 0) : cssIndex;
+                if (!res.hasStoreRender) {
+                    setLocal({
+                        offset: res.offset,
+                        text: res.text,
+                        uuid,
+                    });
+                }
             };
             //点击高亮节点后显示
-            jsMark.onClick = function (eleArr) {
-                console.log(eleArr[0].dataset.selector)
-                alert("删除")
-                jsMark.clearMark(eleArr[0].dataset.selector);
-                clearItemLocal(eleArr[0].dataset.selector);
+            jsMark.onClick = function (uid) {
+                let hasDelete = confirm("是否删除");
+                if (hasDelete) {
+                    jsMark.clearMark(uid);
+                    clearItemLocal(uid);
+                }
             };
-           console.log(jsMark.findWord("深拷贝")) 
+            console.log(jsMark.findWord("深拷贝"))
             //本地数据渲染
             jsMark.renderStore(jsMark.findWord("深拷贝"));
         }

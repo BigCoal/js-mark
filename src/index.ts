@@ -43,12 +43,9 @@ class JsMark {
 
         that._onClick = function (e: MouseEvent) {
             if (e.target !== null && "dataset" in e.target) {
-                let selector = (e.target as HTMLTextAreaElement).dataset.selector;
-                if (selector) {
-                    let doms = document.querySelectorAll(
-                        `span[data-selector="${selector}"]`
-                    );
-                    that.onClick && that.onClick(doms);
+                let selectorId = (e.target as HTMLTextAreaElement).dataset.selector;
+                if (selectorId) {
+                    that.onClick && that.onClick(selectorId);
                 }
             }
         };
@@ -66,7 +63,7 @@ class JsMark {
         this._element.addEventListener("mouseup", this._onMouseUp as Listener);
     }
 
-    private _destroyEvent() {
+    destroyEvent() {
         this._element.removeEventListener("mouseup", this._onMouseUp as Listener);
     }
 
@@ -89,14 +86,14 @@ class JsMark {
                     startContainer: startParentNode,
                     startOffset:
                         item.offset - Util.relativeOffset(startParentNode, this._element),
-                    other: item,
+                    storeRenderOther: item,
                 });
             }
         });
     }
 
-    findWord(word:string){
-        if(!word) return;
+    findWord(word:string):Nullable<SelectBase[]>{
+        if(!word) return null;
         return Util.relativeOffsetChat(word, this._element)
     }
 
@@ -144,18 +141,18 @@ class JsMark {
             const e = rangeNodes[i];
             text += e.nodeValue;
         }
-        let firstRender = true;
+        let hasStoreRender = true;
         if (!rangeNode) {
-            firstRender = false;
+            hasStoreRender = false;
             selection.removeAllRanges();
         }
         this._onSelected &&
             this._onSelected({
-                nodes: rangeNodes,
-                other: rangeNode && rangeNode.other ? rangeNode.other : {},
                 text,
                 offset,
-                firstRender,
+                hasStoreRender,
+                textNodes: rangeNodes,
+                storeRenderOther: rangeNode && rangeNode.storeRenderOther ? rangeNode.storeRenderOther : {},
             });
     }
 
@@ -168,12 +165,19 @@ class JsMark {
         return rangeText;
     }
 
-    repaintRange(eleArr: Element[], uuid: string, cssClass: string) {
-        let uid = uuid || Util.Guid();
-        eleArr.forEach((node) => {
+    repaintRange(rangeNode:RangeNodes) {
+
+        let {uuid,className,textNodes} = rangeNode;
+        let uid = uuid || Util.Guid()
+        textNodes.forEach((node) => {
             if (node.parentNode) {
                 let hl = document.createElement("span");
-                hl.className = cssClass;
+                if(className){
+                    hl.className = className;
+                }else{
+                    hl.style.background = "rgba(255, 255, 0, 0.3)"
+                }
+               
                 hl.setAttribute("data-selector", uid);
                 node.parentNode.replaceChild(hl, node);
                 hl.appendChild(node);
