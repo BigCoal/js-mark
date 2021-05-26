@@ -63,7 +63,7 @@ interface OPTS {
 ```js
 
 interface Selected {
-    nodes: Text[]; //选中的所有文本节点
+    textNodes: Text[]; //选中的所有文本节点
     text: string;   //选中的文本
     offset: number; //选中文本相对于根结点的偏移量
     hasStoreRender: boolean; //是否来自renderStore方法渲染，一般用于从数据库拿到数据运用jsMark.renderStore方法判断首次渲染
@@ -79,7 +79,7 @@ jsMark.onSelected = function (res:Selected) {};
 
 //定义
 interface RangeNodes{
-    c: Text[]; //选中的所有文本节点,onSelected返回值的res.textNodes
+    textNodes: Text[]; //选中的所有文本节点,onSelected返回值的res.textNodes
     className: string; //需要标注的文本节点样式类
     uuid?: string; //标注文本节点的唯一id，会绑定到节点身上的data-selector属性，此id可用于清除当前标注节点，可选，不传会自动生成
     storeRenderOther?:any; //来自jsMark.renderStore方法的用户自定义参数
