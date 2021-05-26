@@ -5,10 +5,10 @@
 
 ## 说明
 
-<html>
+<div>
 <span style="background:rgba(0, 0, 255, 0.3);">js-mark是一个JavaScript库，用于在浏览器。他是一个可以在任何网页做标记的前端库,</span>
 <span style="background:rgba(255, 255, 0, 0.3);">它提供了一组可交互操作的工具来注释网页内容。</span><span style="background:rgba(0, 255, 127, 0.3);">支持标记文本和</span><span style="background:rgba(255, 0, 0, 0.3);">持久化存储与还原</span>
-</html>
+</div>
 
 
 
@@ -40,15 +40,15 @@
 ```
 
 配置说明：
-参数名|类型|描述|是否必须|默认值
---|--|--|--|--|--
-el | Document | 标记的根节点元素 | 是 | null
-options | Object | 配置项(详细如下) | 否 | null
+| 参数名|类型|描述|是否必须|默认值
+|--|--|--|--|--|--
+|el | Document | 标记的根节点元素 | 是 | null
+|options | Object | 配置项(详细如下) | 否 | null
 
 ``options``配置说明：
-参数名|类型|描述|是否必须|默认值
---|--|--|--|--|--
-isCover | Boolean | 标记内容是否可以覆盖 | 否 | true
+|参数名|类型|描述|是否必须|默认值
+|--|--|--|--|--|--
+|isCover | Boolean | 标记内容是否可以覆盖 | 否 | true
 
 
 ### 实例方法
@@ -74,7 +74,7 @@ interface Selected {
 ## 兼容性
 
 
-IE | Firefox| Chrome| Safari| Opera
----|---|---|---|---
-10+ | 52+ |15+|5.1+|15+
+|IE | Firefox| Chrome| Safari| Opera
+|---|---|---|---|---
+|10+ | 52+ |15+|5.1+|15+
 

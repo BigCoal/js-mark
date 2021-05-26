@@ -197,8 +197,9 @@
             };
             //点击高亮节点后显示
             jsMark.onClick = function (eleArr) {
+                console.log(eleArr[0].dataset.selector)
                 alert("删除")
-                jsMark.clearMark("1");
+                jsMark.clearMark(eleArr[0].dataset.selector);
                 clearItemLocal(eleArr[0].dataset.selector);
             };
            console.log(jsMark.findWord("深拷贝")) 
