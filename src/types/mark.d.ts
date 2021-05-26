@@ -15,9 +15,9 @@ interface rangeNode {
 }
 
 interface Selected {
-    nodes: Element[];
-    text: string;
-    offset: number;
+    nodes: Text[]; //选中的所有文本节点
+    text: string;   //选中的文本
+    offset: number; //选中文本相对于根结点的偏移量
     firstRender: boolean;
 }
 

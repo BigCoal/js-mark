@@ -1,6 +1,6 @@
 import * as Util from "./util/index.js";
 import config from "./lib/config.js";
-class textSelector {
+class jsMark {
     constructor(ops) {
         var _a, _b;
         this._element = ops.el;
@@ -35,13 +35,11 @@ class textSelector {
             }
         };
         that._onSelected = function (e) {
-            this.onSelected &&
-                this.onSelected({
-                    code: typeof e === "string" ? -1 : 1,
-                    data: e,
-                });
             if (typeof e === "string") {
-                console.error(e);
+                throw new Error(e);
+            }
+            else {
+                this.onSelected && this.onSelected(e);
             }
         };
     }
@@ -151,7 +149,7 @@ class textSelector {
         });
         return uuid;
     }
-    clearRange(uuid) {
+    clearMark(uuid) {
         let eleArr = document.querySelectorAll(`span[data-selector="${uuid}"]`);
         eleArr.forEach((node) => {
             if (node.parentNode) {
@@ -166,4 +164,4 @@ class textSelector {
         });
     }
 }
-export default textSelector;
+export default jsMark;

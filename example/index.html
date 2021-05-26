@@ -150,7 +150,7 @@
     </div>
     <!-- <script src="../dist/js-mark.js"></script> -->
     <script type="module">
-        import textSelector from "../build/index.js";
+        import JsMark from "../build/index.js";
         window.onload = function () {
             function setLocal(position) {
                 let data = getLocal();
@@ -174,18 +174,18 @@
             ];
 
             let textDom = document.querySelector("#highlight");
-            let lineHeight = new textSelector({
+            let jsMark = new JsMark({
                 el:textDom,
                 options:{
                     isCover:true
                 }
             });
             //选中文本后回调
-            lineHeight.onSelected = function (res) {
-                if (res.code === 1) {
-                    let data = res.data;
+            jsMark.onSelected = function (res) {
+                console.log(res)
+                    let data = res;
                     let uid = data.other.uuid;
-                    let uuid = lineHeight.repaintRange(data.nodes,uid, cssStyle[cssIndex]);
+                    let uuid = jsMark.repaintRange(data.nodes,uid, cssStyle[cssIndex]);
                     ++cssIndex >= cssStyle.length ? (cssIndex = 0) : cssIndex;
                     if (!data.firstRender) {
                         setLocal({
@@ -194,19 +194,16 @@
                             uuid,
                         });
                     }
-                } else {
-                    console.log(res.data);
-                }
             };
             //点击高亮节点后显示
-            lineHeight.onClick = function (eleArr) {
+            jsMark.onClick = function (eleArr) {
                 alert("删除")
-                lineHeight.clearRange("1");
+                jsMark.clearMark("1");
                 clearItemLocal(eleArr[0].dataset.selector);
             };
-           console.log(lineHeight.findWord("深拷贝")) 
+           console.log(jsMark.findWord("深拷贝")) 
             //本地数据渲染
-            lineHeight.renderStore(lineHeight.findWord("33"));
+            jsMark.renderStore(jsMark.findWord("深拷贝"));
         }
     </script>
 </body>

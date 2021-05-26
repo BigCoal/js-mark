@@ -1,7 +1,7 @@
 import * as Util from "./util/index.js";
 import config from "./lib/config.js";
 
-class textSelector {
+class jsMark {
     private _element: Element;
     private _selection: Nullable<Selection>;
     private _onMouseUp:Nullable<Listener>;
@@ -54,13 +54,10 @@ class textSelector {
         };
 
         that._onSelected = function (e: Selected | string) {
-            this.onSelected &&
-                this.onSelected({
-                    code: typeof e === "string" ? -1 : 1,
-                    data: e,
-                });
                 if(typeof e === "string"){
-                    console.error(e)
+                    throw new Error(e)
+                }else{
+                    this.onSelected &&this.onSelected(e);
                 }
         };
     }
@@ -185,7 +182,7 @@ class textSelector {
         return uuid;
     }
     
-    clearRange(uuid: Number): void {
+    clearMark(uuid: Number): void {
         let eleArr = document.querySelectorAll(`span[data-selector="${uuid}"]`);
         eleArr.forEach((node) => {
             if (node.parentNode) {
@@ -200,4 +197,4 @@ class textSelector {
         });
     }
 }
-export default textSelector;
+export default jsMark;
