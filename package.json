@@ -7,6 +7,7 @@
   "main": "dist/js-mark.js",
   "homepage": "https://github.com/know-vampire/js-annotation.git",
   "scripts": {
+    "dev": "rollup --config -w",
     "build": "npm-run-all  build:*",
     "build:ts": "tsc",
     "build:rollup": "rollup --config"
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.12.7",
+    "@babel/preset-typescript": "^7.16.7",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
     "husky": "^4.3.6",
@@ -50,5 +52,9 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
+  },
+  "dependencies": {
+    "@rollup/plugin-typescript": "^8.3.0",
+    "tslib": "^2.3.1"
   }
 }
