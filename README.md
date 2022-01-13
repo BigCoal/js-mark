@@ -13,7 +13,7 @@
 
 
 ## Demo
-如果进行简单的演示，可以打开``https://bigcoal.github.io/``运行方可查看演示效果
+如果进行简单的演示，可以打开``http://webviews.cn/js-mark/``选中文本进行标注
 
 ## 安装
 #### 方法一
