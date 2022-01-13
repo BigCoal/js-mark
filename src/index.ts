@@ -7,8 +7,8 @@ const markSelector = "data-selector"
 class JsMark {
     private _element: Element;
     private _selection: Nullable<Selection>;
-    public onSelected: Nullable<Function>=null;
-    public onClick: Nullable<Function>=null;
+    public onSelected: Nullable<Function> = null;
+    public onClick: Nullable<Function> = null;
 
     constructor(ops: opsConfig) {
         const ele = this._element = ops.el;
@@ -22,6 +22,11 @@ class JsMark {
         }
 
         mergeOptions(config, ops.options)
+
+        if (config.ignoreClass.length > 0) {
+            Util.setEleNoSelect(this._element, config.ignoreClass)
+        }
+
         ele.addEventListener("mouseup", this._onMouseUp.bind(this));
     }
 
@@ -34,12 +39,12 @@ class JsMark {
         }
     }
 
-    private _onError(e:  string) {
+    private _onError(e: string) {
         throw new Error(e)
     }
 
     private _onSelected(e: Selected | string) {
-            this.onSelected && this.onSelected(e);
+        this.onSelected && this.onSelected(e);
     }
 
     private _onMouseUp(e: Event) {
@@ -52,6 +57,18 @@ class JsMark {
         const range = selection.getRangeAt(0);
         this._captureSelection(range);
     }
+    //清除text节点中在userSelect为none的test节点
+    private _clearUserSelectText(rangeNodes: textEle[]) {
+        //解决从左侧划区，终点在userSelect:none区域时，会选中userSelect:none的问题
+        let textNodes: textEle[] = []
+        for (let i = 0; i < rangeNodes.length; i++) {
+            const item = rangeNodes[i];
+            if (item.ignore == true) {
+                textNodes.push(item)
+            }
+        }
+        return textNodes
+    }
     //捕获已选中节点
     private _captureSelection(range: markRange): void {
         let selection = this._selection;
@@ -62,33 +79,39 @@ class JsMark {
             return this._onError("只可选中文本节点");
         }
 
-        if (!config.isCover&&this.hasCoverSelector(range,markSelector)) {
+        if (!config.isCover &&!range.storeRenderOther&& this.hasCoverSelector(range, markSelector)) {
             selection.removeAllRanges();
             return this._onError("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
         }
 
-        let sCntr = range.startContainer as Text;
-        let eCntr = range.endContainer as Text;
+
+
+        let sCntr = range.startContainer as textEle;
+        let eCntr = range.endContainer as textEle;
 
         if (sCntr !== eCntr) {
             let endContainer = eCntr.splitText(range.endOffset);
-            eCntr = endContainer.previousSibling as Text;
+            eCntr = endContainer.previousSibling as textEle;
             sCntr = sCntr.splitText(range.startOffset);
         } else {
             let endContainer = eCntr.splitText(range.endOffset);
             sCntr = sCntr.splitText(range.startOffset);
-            eCntr = endContainer.previousSibling as Text;
+            eCntr = endContainer.previousSibling as textEle;
         }
 
-        const textNodes = Util.getTextNodes(range.commonAncestorContainer);
+
+        const commonTextNodes = Util.getTextNodes(range.commonAncestorContainer, config.ignoreClass);
+        let rangeNodes = Util.sliceTextNodes(commonTextNodes, sCntr, eCntr);
+        let textNodes: textEle[] = config.ignoreClass.length > 0 ? this._clearUserSelectText(rangeNodes) : rangeNodes
+
+
         const offset = Util.getRelativeOffset(sCntr, this._element);
-        const rangeNodes = Util.sliceTextNodes(textNodes, sCntr, eCntr);
 
         this._onSelected({
             text: range.toString(),
             offset,
             hasStoreRender: hasOwn(range, "storeRenderOther"),
-            textNodes: rangeNodes,
+            textNodes,
             storeRenderOther: range && range.storeRenderOther ? range.storeRenderOther : {},
         });
 
@@ -103,7 +126,7 @@ class JsMark {
      * @param attrName  属性名
      * @returns 
      */
-    private hasCoverSelector(range:Range,attrName:string):boolean{
+    private hasCoverSelector(range: Range, attrName: string): boolean {
         let hasCover = false;
         if (range.cloneContents().querySelector(`[${attrName}]`)) {
             //1.选中范围内存在已经标注的节点
@@ -174,6 +197,7 @@ class JsMark {
      */
     repaintRange(rangeNode: RangeNodes) {
         let { uuid, className, textNodes } = rangeNode;
+       
         let uid = uuid || Util.Guid()
         textNodes.forEach((node) => {
             if (node.parentNode) {
@@ -189,7 +213,7 @@ class JsMark {
                 hl.appendChild(node);
             }
         });
-        return uuid;
+        return uid;
     }
     /**
      * @intro 根据标注的元素上属性data-selector为uuid的标签

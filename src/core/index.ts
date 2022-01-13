@@ -178,7 +178,6 @@ class Mark {
     repaintRange(rangeNode: RangeNodes) {
         let { uuid, className, textNodes } = rangeNode;
         let uid = uuid || Util.Guid()
-        console.log("rangeNode", rangeNode)
         textNodes.forEach((node) => {
             if (node.parentNode) {
                 let hl = document.createElement("span");

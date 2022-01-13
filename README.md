@@ -54,7 +54,7 @@ interface OPTS {
 |参数名|类型|描述|是否必须|默认值
 |---|---|---|---|---
 |isCover | Boolean | 标记内容是否可以覆盖 | 否 | true
-
+|ignoreClass | string[] | 忽略的class，添加后不会被标注 | 否 | []
 
 ### 实例方法
 ##### 1.鼠标选中文本后的回调方法：``jsMark.onSelected``

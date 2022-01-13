@@ -11,26 +11,35 @@ export function Guid(): string {
 /**
  * @intro 获取节点下所有的文本节点
  * @param node 节点
+ * @param ignoreClass 忽略class下的文本节点
  * @returns 所有文本节点
  */
-export function getTextNodes(node:Node): Text[] {
+export function getTextNodes(node: Node,ignoreClass:string[]=[],ignore=true): textEle[] {
   let textNodes = [];
   let e = node.childNodes;
+
   for (let i = 0; i < e.length; i++) {
-    let element = e[i];
+    let element = e[i] as ele;
+    element.ignore = ignore;
+    const classNames =  getClassNames(element)
+    if(ignoreClass.length>0&&classNames.length>0){
+      if(ignoreClass.some(item=>classNames.includes(item))){
+        element.ignore = false;
+      }
+    }
     if (element.nodeType === NodeTypes.TEXT_NODE) {
-      if(element.textContent&&element.textContent!=='\n'){
-        textNodes.push(element as Text);
+      if (element.textContent && element.textContent !== '\n') {
+        textNodes.push(element as unknown as textEle);
       }
 
-    } else if(element.nodeType === NodeTypes.ELEMENT_NODE) {
-      textNodes.push(...getTextNodes(element));
+    } else if (element.nodeType === NodeTypes.ELEMENT_NODE) {
+      textNodes.push(...getTextNodes(element,ignoreClass,element.ignore ));
     }
   }
   return textNodes;
 }
 /** 获取字符相对于root元素的偏移量*/
-export function relativeOffsetChat(content: string, root: Element):SelectInfo[] {
+export function relativeOffsetChat(content: string, root: Element): SelectInfo[] {
   let textNodes = getTextNodes(root);
   let length = 0;
   let hitContent = textNodes.map((item) => {
@@ -90,12 +99,37 @@ export function relativeNode(root: Element, offset: number): null | Text {
  * @param endTextNode 截取终止节点
  * @returns 截取后节点
  */
-export function sliceTextNodes(textNodes: Text[], startTextNode: Text,endTextNode:Text) {
-
+export function sliceTextNodes(textNodes: textEle[], startTextNode: textEle, endTextNode: textEle) {
   let startIndex = textNodes.indexOf(startTextNode);
   let endIndex = textNodes.indexOf(endTextNode);
   let rangeText = textNodes.filter((_, i) => {
-      return startIndex <= i && endIndex >= i;
+    return startIndex <= i && endIndex >= i;
   });
   return rangeText;
+}
+/**
+ * 获取节点的class
+ * @param node 节点
+ * @returns 
+ */
+function getClassNames(node: Node) {
+  let classNames:string[] = []
+  if (node.nodeType === NodeTypes.ELEMENT_NODE) {
+    const ele = (node as Element);
+    classNames =ele.className?ele.className.split(" "):[]
+  }
+  return classNames
+
+}
+
+
+export function  setEleNoSelect(ele:Element,classNames:string[]){
+  classNames.map(item=>{
+    const hitEle = ele.querySelectorAll(`.${item}`)
+    if(!hitEle) return;
+    for (let i = 0; i < hitEle.length; i++) {
+      const element = hitEle[i] as HTMLElement;
+      element.style.userSelect='none'
+    }
+  })
 }

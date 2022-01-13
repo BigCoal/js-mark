@@ -19,18 +19,25 @@
             return v.toString(16);
         });
     }
-    function getTextNodes(node) {
+    function getTextNodes(node, ignoreClass = [], ignore = true) {
         let textNodes = [];
         let e = node.childNodes;
         for (let i = 0; i < e.length; i++) {
             let element = e[i];
+            element.ignore = ignore;
+            const classNames = getClassNames(element);
+            if (ignoreClass.length > 0 && classNames.length > 0) {
+                if (ignoreClass.some(item => classNames.includes(item))) {
+                    element.ignore = false;
+                }
+            }
             if (element.nodeType === NodeTypes.TEXT_NODE) {
                 if (element.textContent && element.textContent !== '\n') {
                     textNodes.push(element);
                 }
             }
             else if (element.nodeType === NodeTypes.ELEMENT_NODE) {
-                textNodes.push(...getTextNodes(element));
+                textNodes.push(...getTextNodes(element, ignoreClass, element.ignore));
             }
         }
         return textNodes;
@@ -89,6 +96,25 @@
         });
         return rangeText;
     }
+    function getClassNames(node) {
+        let classNames = [];
+        if (node.nodeType === NodeTypes.ELEMENT_NODE) {
+            const ele = node;
+            classNames = ele.className ? ele.className.split(" ") : [];
+        }
+        return classNames;
+    }
+    function setEleNoSelect(ele, classNames) {
+        classNames.map(item => {
+            const hitEle = ele.querySelectorAll(`.${item}`);
+            if (!hitEle)
+                return;
+            for (let i = 0; i < hitEle.length; i++) {
+                const element = hitEle[i];
+                element.style.userSelect = 'none';
+            }
+        });
+    }
 
     var config = {
         isCover: true,
@@ -118,6 +144,9 @@
                 this._onError("浏览器暂不支持标注，请查看文档支持浏览器版本");
             }
             mergeOptions(config, ops.options);
+            if (config.ignoreClass.length > 0) {
+                setEleNoSelect(this._element, config.ignoreClass);
+            }
             ele.addEventListener("mouseup", this._onMouseUp.bind(this));
         }
         _onClick(e) {
@@ -144,6 +173,16 @@
             const range = selection.getRangeAt(0);
             this._captureSelection(range);
         }
+        _clearUserSelectText(rangeNodes) {
+            let textNodes = [];
+            for (let i = 0; i < rangeNodes.length; i++) {
+                const item = rangeNodes[i];
+                if (item.ignore == true) {
+                    textNodes.push(item);
+                }
+            }
+            return textNodes;
+        }
         _captureSelection(range) {
             let selection = this._selection;
             if (!selection)
@@ -152,7 +191,7 @@
                 selection.removeAllRanges();
                 return this._onError("只可选中文本节点");
             }
-            if (!config.isCover && this.hasCoverSelector(range, markSelector)) {
+            if (!config.isCover && !range.storeRenderOther && this.hasCoverSelector(range, markSelector)) {
                 selection.removeAllRanges();
                 return this._onError("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
             }
@@ -168,14 +207,15 @@
                 sCntr = sCntr.splitText(range.startOffset);
                 eCntr = endContainer.previousSibling;
             }
-            const textNodes = getTextNodes(range.commonAncestorContainer);
+            const commonTextNodes = getTextNodes(range.commonAncestorContainer, config.ignoreClass);
+            let rangeNodes = sliceTextNodes(commonTextNodes, sCntr, eCntr);
+            let textNodes = config.ignoreClass.length > 0 ? this._clearUserSelectText(rangeNodes) : rangeNodes;
             const offset = getRelativeOffset(sCntr, this._element);
-            const rangeNodes = sliceTextNodes(textNodes, sCntr, eCntr);
             this._onSelected({
                 text: range.toString(),
                 offset,
                 hasStoreRender: hasOwn(range, "storeRenderOther"),
-                textNodes: rangeNodes,
+                textNodes,
                 storeRenderOther: range && range.storeRenderOther ? range.storeRenderOther : {},
             });
             selection.removeAllRanges();
@@ -245,7 +285,7 @@
                     hl.appendChild(node);
                 }
             });
-            return uuid;
+            return uid;
         }
         deleteMark(uuid) {
             let eleArr = document.querySelectorAll(`span[${markSelector}="${uuid}"]`);

@@ -39,3 +39,10 @@ interface markRange extends Range{
     storeRenderOther?:any; //来自jsMark.renderStore方法的用户自定义参数
 }
 
+interface ele extends Element{
+    ignore:boolean //是否忽略
+}
+
+interface textEle extends Text{
+    ignore?:boolean //是否忽略
+}
