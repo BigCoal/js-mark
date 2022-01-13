@@ -32,3 +32,8 @@ interface opsConfig{
     el:Element,         //要挂载的元素节点
     options?:options  //配置
 }
+
+interface markRange extends Range{
+    storeRenderOther?:any; //来自jsMark.renderStore方法的用户自定义参数
+}
+

@@ -203,6 +203,11 @@
                 // res.textNodes[0].parentNode.append(ele)
 
                 ++cssIndex >= cssStyle.length ? (cssIndex = 0) : cssIndex;
+                console.log({
+                        offset: res.offset,
+                        text: res.text,
+                        uuid,
+                    })
                 if (!res.hasStoreRender) {
                     setLocal({
                         offset: res.offset,

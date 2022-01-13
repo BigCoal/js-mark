@@ -83,7 +83,7 @@ class JsMark {
                 item.offset + item.text.length
             );
             if (endParentNode && startParentNode) {
-                this._captureSelection({
+                const obj = {
                     collapsed: false,
                     commonAncestorContainer: this._element,
                     endContainer: endParentNode,
@@ -95,7 +95,8 @@ class JsMark {
                     startOffset:
                         item.offset - Util.getRelativeOffset(startParentNode, this._element),
                     storeRenderOther: item,
-                });
+                }
+                this._captureSelection(obj);
             }
         });
     }
@@ -109,7 +110,7 @@ class JsMark {
     }
 
     //捕获已选中节点
-    private _captureSelection(range: Range, e?: MouseEvent): void {
+    private _captureSelection(range: markRange, e?: MouseEvent): void {
         let selection = this._selection;
         if (selection == null) return;
         if (range.collapsed) {
@@ -125,7 +126,7 @@ class JsMark {
 
         if (!config.isCover) {
             let hasCover = false;
-            
+
             if (range.cloneContents().querySelector("[data-selector]")) {
                 //1.选中范围内存在已经标注的节点
                 hasCover = true;
@@ -145,29 +146,36 @@ class JsMark {
             }
         }
 
-  
-        //TODO bug当选中的不是文本节点时报错，无效果，比如说img
-        if (r.startContainer !== r.endContainer) {
+        if (r.startContainer.nodeType !== 3 || r.endContainer.nodeType !== 3) {
             selection.removeAllRanges();
-            let endContainer = r.endContainer.splitText(r.endOffset);
-            r.endContainer = endContainer.previousSibling as Text;
-            r.startContainer = r.startContainer.splitText(r.startOffset);
-        } else {
-            let endContainer = r.endContainer.splitText(r.endOffset);
-            r.startContainer = r.startContainer.splitText(r.startOffset);
-            r.endContainer = endContainer.previousSibling as Text;
+            return this._onSelected && this._onSelected("只可选中文本节点");
         }
+
+        let sCntr = r.startContainer as Text;
+        let eCntr = r.endContainer as Text;
+
+        if (sCntr !== eCntr) {
+            let endContainer = eCntr.splitText(r.endOffset);
+            eCntr = endContainer.previousSibling as Text;
+            sCntr = sCntr.splitText(r.startOffset);
+        } else {
+            let endContainer = eCntr.splitText(r.endOffset);
+            sCntr = sCntr.splitText(r.startOffset);
+            eCntr = endContainer.previousSibling as Text;
+        }
+
         let textNodes = Util.getTextNodes(range.commonAncestorContainer);
-      
-        const offset = Util.getRelativeOffset(r.startContainer, this._element);
-        let rangeNodes = Util.sliceTextNodes(textNodes, r.startContainer, r.endContainer);
-       
-        let hasStoreRender = true;
+
+        const offset = Util.getRelativeOffset(sCntr, this._element);
+        let rangeNodes = Util.sliceTextNodes(textNodes, sCntr, eCntr);
+        let hasStoreRender = false;
         if (!range) {
             hasStoreRender = false;
-            selection.removeAllRanges();
+
         }
-        console.log(Util.getTextNodes(range.cloneContents()))
+
+        selection.removeAllRanges();
+
         this._onSelected &&
             this._onSelected({
                 text: range.toString(),
@@ -179,7 +187,7 @@ class JsMark {
 
 
         //将 Range 从使用状态中释放，改善性能
-        range.detach()
+        range.detach && range.detach()
     }
 
 
@@ -191,7 +199,7 @@ class JsMark {
     repaintRange(rangeNode: RangeNodes) {
         let { uuid, className, textNodes } = rangeNode;
         let uid = uuid || Util.Guid()
-        console.log("rangeNode",rangeNode)
+        console.log("rangeNode", rangeNode)
         textNodes.forEach((node) => {
             if (node.parentNode) {
                 let hl = document.createElement("span");

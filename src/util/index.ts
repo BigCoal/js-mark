@@ -16,11 +16,13 @@ export function Guid(): string {
 export function getTextNodes(node:Node): Text[] {
   let textNodes = [];
   let e = node.childNodes;
-  // console.log("e",e)
   for (let i = 0; i < e.length; i++) {
     let element = e[i];
     if (element.nodeType === NodeTypes.TEXT_NODE) {
-      textNodes.push(element as Text);
+      if(element.textContent&&element.textContent!=='\n'){
+        textNodes.push(element as Text);
+      }
+
     } else if(element.nodeType === NodeTypes.ELEMENT_NODE) {
       textNodes.push(...getTextNodes(element));
     }
@@ -89,6 +91,7 @@ export function relativeNode(root: Element, offset: number): null | Text {
  * @returns 截取后节点
  */
 export function sliceTextNodes(textNodes: Text[], startTextNode: Text,endTextNode:Text) {
+
   let startIndex = textNodes.indexOf(startTextNode);
   let endIndex = textNodes.indexOf(endTextNode);
   let rangeText = textNodes.filter((_, i) => {

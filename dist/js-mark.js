@@ -25,7 +25,9 @@
         for (let i = 0; i < e.length; i++) {
             let element = e[i];
             if (element.nodeType === NodeTypes.TEXT_NODE) {
-                textNodes.push(element);
+                if (element.textContent && element.textContent !== '\n') {
+                    textNodes.push(element);
+                }
             }
             else if (element.nodeType === NodeTypes.ELEMENT_NODE) {
                 textNodes.push(...getTextNodes(element));
@@ -157,7 +159,7 @@
                 let startParentNode = relativeNode(this._element, item.offset + 1);
                 let endParentNode = relativeNode(this._element, item.offset + item.text.length);
                 if (endParentNode && startParentNode) {
-                    this._captureSelection({
+                    const obj = {
                         collapsed: false,
                         commonAncestorContainer: this._element,
                         endContainer: endParentNode,
@@ -167,7 +169,8 @@
                         startContainer: startParentNode,
                         startOffset: item.offset - getRelativeOffset(startParentNode, this._element),
                         storeRenderOther: item,
-                    });
+                    };
+                    this._captureSelection(obj);
                 }
             });
         }
@@ -208,26 +211,30 @@
                     return this._onSelected && this._onSelected("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
                 }
             }
-            if (r.startContainer !== r.endContainer) {
+            if (r.startContainer.nodeType !== 3 || r.endContainer.nodeType !== 3) {
                 selection.removeAllRanges();
-                let endContainer = r.endContainer.splitText(r.endOffset);
-                r.endContainer = endContainer.previousSibling;
-                r.startContainer = r.startContainer.splitText(r.startOffset);
+                return this._onSelected && this._onSelected("只可选中文本节点");
+            }
+            let sCntr = r.startContainer;
+            let eCntr = r.endContainer;
+            if (sCntr !== eCntr) {
+                let endContainer = eCntr.splitText(r.endOffset);
+                eCntr = endContainer.previousSibling;
+                sCntr = sCntr.splitText(r.startOffset);
             }
             else {
-                let endContainer = r.endContainer.splitText(r.endOffset);
-                r.startContainer = r.startContainer.splitText(r.startOffset);
-                r.endContainer = endContainer.previousSibling;
+                let endContainer = eCntr.splitText(r.endOffset);
+                sCntr = sCntr.splitText(r.startOffset);
+                eCntr = endContainer.previousSibling;
             }
             let textNodes = getTextNodes(range.commonAncestorContainer);
-            const offset = getRelativeOffset(r.startContainer, this._element);
-            let rangeNodes = sliceTextNodes(textNodes, r.startContainer, r.endContainer);
-            let hasStoreRender = true;
+            const offset = getRelativeOffset(sCntr, this._element);
+            let rangeNodes = sliceTextNodes(textNodes, sCntr, eCntr);
+            let hasStoreRender = false;
             if (!range) {
                 hasStoreRender = false;
-                selection.removeAllRanges();
             }
-            console.log(getTextNodes(range.cloneContents()));
+            selection.removeAllRanges();
             this._onSelected &&
                 this._onSelected({
                     text: range.toString(),
@@ -236,7 +243,7 @@
                     textNodes: rangeNodes,
                     storeRenderOther: range && range.storeRenderOther ? range.storeRenderOther : {},
                 });
-            range.detach();
+            range.detach && range.detach();
         }
         repaintRange(rangeNode) {
             let { uuid, className, textNodes } = rangeNode;
