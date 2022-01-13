@@ -52,7 +52,8 @@
                             <div data-qa-selector="article_text" elementtiming="article-text">
                                 <div>
                                     <div style="display: inline-block;width:20px">34      </div>
-                                    <p data-paragraph-index="0">Whale hunting has plundered the seas of giant whales for
+                                    <p data-paragraph-index="0">Whale 
+                                       <span class="ignore">hunting has plundered the seas</span>  of giant whales for
                                         much of the last century. With the help of modern technology, people have killed
                                         up to 99 percent of certain species. Some scientists thought this would cause
                                         krill — the tiny crustaceans that many whales gulp down — to explode in number.
@@ -185,7 +186,7 @@
             let jsMark = new JsMark({
                 el: document.querySelector("#highlight"),
                 options:{
-                    isCover:true,
+                    isCover:false,
                     ignoreClass:[22323]
                 }
             });
@@ -220,7 +221,7 @@
             jsMark.onClick = function (uid) {
                 let hasDelete = confirm("是否删除");
                 if (hasDelete) {
-                    jsMark.clearMark(uid);
+                    jsMark.deleteMark(uid);
                     clearItemLocal(uid);
                 }
             };

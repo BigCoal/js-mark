@@ -142,16 +142,16 @@ jsMark.findWord("标注文本");
 ##### 6.清除单个标注：``jsMark.clearMark``
 清除标签上data-selector属性为唯一uid的标签标注
 ```js
-jsMark.clearMark(uid);
+jsMark.deleteMark(uid);
 ```
 ##### 7.清除所有标注：``jsMark.clearMarkAll``
 ```js
 jsMark.clearMarkAll();
 ```
 
-##### 8.清除事件：``jsMark.destroyEvent``
+##### 8.销毁事件：``jsMark.destroy``
 ```js
-jsMark.destroyEvent();
+jsMark.destroy();
 ```
 
 

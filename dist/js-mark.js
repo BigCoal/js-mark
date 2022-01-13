@@ -104,57 +104,106 @@
         return basicOps;
     }
 
+    const markSelector = "data-selector";
     class JsMark {
         constructor(ops) {
-            this._element = ops.el;
-            this._selection = window.getSelection();
-            if (this._element.nodeType !== 1) {
-                throw new Error("请挂载dom节点");
-            }
-            if (!this._selection) {
-                throw new Error("浏览器暂不支持标注，请查看文档支持浏览器版本");
-            }
-            mergeOptions(config, ops.options);
-            this._onMouseUp = null;
-            this._onClick = null;
-            this._onSelected = null;
             this.onSelected = null;
             this.onClick = null;
-            this._initEvent();
-            this._addEvent();
+            const ele = this._element = ops.el;
+            this._selection = window.getSelection();
+            if (ele.nodeType !== 1) {
+                this._onError("请挂载dom节点");
+            }
+            if (!this._selection) {
+                this._onError("浏览器暂不支持标注，请查看文档支持浏览器版本");
+            }
+            mergeOptions(config, ops.options);
+            ele.addEventListener("mouseup", this._onMouseUp.bind(this));
         }
-        _initEvent() {
-            let that = this;
-            that._onMouseUp = function (e) {
-                let selection = that._selection;
-                if (selection == null)
-                    return;
-                that._captureSelection(selection.getRangeAt(0), e);
-            };
-            that._onClick = function (e) {
-                if (e.target !== null && "dataset" in e.target) {
-                    let selectorId = e.target.dataset.selector;
-                    if (selectorId) {
-                        that.onClick && that.onClick(selectorId);
+        _onClick(e) {
+            if (e.target !== null && "dataset" in e.target) {
+                let selectorId = e.target.dataset.selector;
+                if (selectorId) {
+                    this.onClick && this.onClick(selectorId);
+                }
+            }
+        }
+        _onError(e) {
+            throw new Error(e);
+        }
+        _onSelected(e) {
+            this.onSelected && this.onSelected(e);
+        }
+        _onMouseUp(e) {
+            let selection = this._selection;
+            if (selection == null)
+                return;
+            if (selection.isCollapsed) {
+                return this._onClick && this._onClick(e);
+            }
+            const range = selection.getRangeAt(0);
+            this._captureSelection(range);
+        }
+        _captureSelection(range) {
+            let selection = this._selection;
+            if (!selection)
+                return;
+            if (range.startContainer.nodeType !== 3 || range.endContainer.nodeType !== 3) {
+                selection.removeAllRanges();
+                return this._onError("只可选中文本节点");
+            }
+            if (!config.isCover && this.hasCoverSelector(range, markSelector)) {
+                selection.removeAllRanges();
+                return this._onError("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
+            }
+            let sCntr = range.startContainer;
+            let eCntr = range.endContainer;
+            if (sCntr !== eCntr) {
+                let endContainer = eCntr.splitText(range.endOffset);
+                eCntr = endContainer.previousSibling;
+                sCntr = sCntr.splitText(range.startOffset);
+            }
+            else {
+                let endContainer = eCntr.splitText(range.endOffset);
+                sCntr = sCntr.splitText(range.startOffset);
+                eCntr = endContainer.previousSibling;
+            }
+            const textNodes = getTextNodes(range.commonAncestorContainer);
+            const offset = getRelativeOffset(sCntr, this._element);
+            const rangeNodes = sliceTextNodes(textNodes, sCntr, eCntr);
+            this._onSelected({
+                text: range.toString(),
+                offset,
+                hasStoreRender: hasOwn(range, "storeRenderOther"),
+                textNodes: rangeNodes,
+                storeRenderOther: range && range.storeRenderOther ? range.storeRenderOther : {},
+            });
+            selection.removeAllRanges();
+            range.detach && range.detach();
+        }
+        hasCoverSelector(range, attrName) {
+            var _a;
+            let hasCover = false;
+            if (range.cloneContents().querySelector(`[${attrName}]`)) {
+                hasCover = true;
+            }
+            else {
+                if (((_a = range.commonAncestorContainer.parentNode) === null || _a === void 0 ? void 0 : _a.nodeType) === 1) {
+                    const pNode = range.commonAncestorContainer.parentNode;
+                    if (pNode.getAttribute(attrName)) {
+                        hasCover = true;
                     }
                 }
-            };
-            that._onSelected = function (e) {
-                if (typeof e === "string") {
-                    throw new Error(e);
-                }
-                else {
-                    this.onSelected && this.onSelected(e);
-                }
-            };
+            }
+            return hasCover;
         }
-        _addEvent() {
-            this._element.addEventListener("mouseup", this._onMouseUp);
-        }
-        destroyEvent() {
+        destroy() {
+            this._selection = null;
             this._element.removeEventListener("mouseup", this._onMouseUp);
         }
         renderStore(obj) {
+            if (this._selection == null)
+                return;
             obj.map((item) => {
                 let startParentNode = relativeNode(this._element, item.offset + 1);
                 let endParentNode = relativeNode(this._element, item.offset + item.text.length);
@@ -179,76 +228,9 @@
                 return null;
             return relativeOffsetChat(word, this._element);
         }
-        _captureSelection(range, e) {
-            var _a;
-            let selection = this._selection;
-            if (selection == null)
-                return;
-            if (range.collapsed) {
-                return this._onClick && this._onClick(e);
-            }
-            let r = {
-                startContainer: range.startContainer,
-                endContainer: range.endContainer,
-                startOffset: range.startOffset,
-                endOffset: range.endOffset,
-            };
-            if (!config.isCover) {
-                let hasCover = false;
-                if (range.cloneContents().querySelector("[data-selector]")) {
-                    hasCover = true;
-                }
-                else {
-                    if (((_a = range.commonAncestorContainer.parentNode) === null || _a === void 0 ? void 0 : _a.nodeType) === 1) {
-                        const pNode = range.commonAncestorContainer.parentNode;
-                        if (pNode.getAttribute("data-selector")) {
-                            hasCover = true;
-                        }
-                    }
-                }
-                if (hasCover) {
-                    selection.removeAllRanges();
-                    return this._onSelected && this._onSelected("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
-                }
-            }
-            if (r.startContainer.nodeType !== 3 || r.endContainer.nodeType !== 3) {
-                selection.removeAllRanges();
-                return this._onSelected && this._onSelected("只可选中文本节点");
-            }
-            let sCntr = r.startContainer;
-            let eCntr = r.endContainer;
-            if (sCntr !== eCntr) {
-                let endContainer = eCntr.splitText(r.endOffset);
-                eCntr = endContainer.previousSibling;
-                sCntr = sCntr.splitText(r.startOffset);
-            }
-            else {
-                let endContainer = eCntr.splitText(r.endOffset);
-                sCntr = sCntr.splitText(r.startOffset);
-                eCntr = endContainer.previousSibling;
-            }
-            let textNodes = getTextNodes(range.commonAncestorContainer);
-            const offset = getRelativeOffset(sCntr, this._element);
-            let rangeNodes = sliceTextNodes(textNodes, sCntr, eCntr);
-            let hasStoreRender = false;
-            if (!range) {
-                hasStoreRender = false;
-            }
-            selection.removeAllRanges();
-            this._onSelected &&
-                this._onSelected({
-                    text: range.toString(),
-                    offset,
-                    hasStoreRender,
-                    textNodes: rangeNodes,
-                    storeRenderOther: range && range.storeRenderOther ? range.storeRenderOther : {},
-                });
-            range.detach && range.detach();
-        }
         repaintRange(rangeNode) {
             let { uuid, className, textNodes } = rangeNode;
             let uid = uuid || Guid();
-            console.log("rangeNode", rangeNode);
             textNodes.forEach((node) => {
                 if (node.parentNode) {
                     let hl = document.createElement("span");
@@ -258,15 +240,15 @@
                     else {
                         hl.style.background = "rgba(255, 255, 0, 0.3)";
                     }
-                    hl.setAttribute("data-selector", uid);
+                    hl.setAttribute(markSelector, uid);
                     node.parentNode.replaceChild(hl, node);
                     hl.appendChild(node);
                 }
             });
             return uuid;
         }
-        clearMark(uuid) {
-            let eleArr = document.querySelectorAll(`span[data-selector="${uuid}"]`);
+        deleteMark(uuid) {
+            let eleArr = document.querySelectorAll(`span[${markSelector}="${uuid}"]`);
             eleArr.forEach((node) => {
                 if (node.parentNode) {
                     const fragment = document.createDocumentFragment();

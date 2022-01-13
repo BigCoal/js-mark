@@ -1,3 +1,5 @@
+
+
 interface SelectBase {
     offset: number;  //选中文本相对于根结点的偏移量
     text: string;   //选中的文本

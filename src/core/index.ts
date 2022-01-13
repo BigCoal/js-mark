@@ -4,25 +4,28 @@ import { mergeOptions } from "./core/mergeOptions.js";
 import { hasOwn } from "./lib/index.js";
 
 const markSelector = "data-selector"
-class JsMark {
+class Mark {
     private _element: Element;
     private _selection: Nullable<Selection>;
-    public onSelected: Nullable<Function>=null;
-    public onClick: Nullable<Function>=null;
+
+    public onSelected: Nullable<Function>;
+    public onClick: Nullable<Function>;
 
     constructor(ops: opsConfig) {
-        const ele = this._element = ops.el;
+        this._element = ops.el;
         this._selection = window.getSelection();
-
-        if (ele.nodeType !== 1) {
-            this._onError("请挂载dom节点");
+        if (this._element.nodeType !== 1) {
+            throw new Error("请挂载dom节点");
         }
         if (!this._selection) {
-            this._onError("浏览器暂不支持标注，请查看文档支持浏览器版本");
+            throw new Error("浏览器暂不支持标注，请查看文档支持浏览器版本");
         }
 
         mergeOptions(config, ops.options)
-        ele.addEventListener("mouseup", this._onMouseUp.bind(this));
+
+        this.onSelected = null;
+        this.onClick = null;
+        this._addEvent();
     }
 
     private _onClick(e: Event) {
@@ -34,37 +37,59 @@ class JsMark {
         }
     }
 
-    private _onError(e:  string) {
-        throw new Error(e)
-    }
-
     private _onSelected(e: Selected | string) {
+        if (typeof e === "string") {
+            throw new Error(e)
+        } else {
             this.onSelected && this.onSelected(e);
+        }
     }
 
     private _onMouseUp(e: Event) {
         let selection = this._selection;
         if (selection == null) return;
-        if (selection.isCollapsed) {
+        const range = selection.getRangeAt(0);
+        if (range.collapsed) {
             //选中起点位置和终点位置相同,触发点击事件
             return this._onClick && this._onClick(e);
         }
-        const range = selection.getRangeAt(0);
         this._captureSelection(range);
     }
+
+    private _addEvent() {
+        this._element.addEventListener("mouseup", this._onMouseUp.bind(this));
+    }
+
     //捕获已选中节点
     private _captureSelection(range: markRange): void {
         let selection = this._selection;
         if (!selection) return;
 
-        if (range.startContainer.nodeType !== 3 || range.endContainer.nodeType !== 3) {
-            selection.removeAllRanges();
-            return this._onError("只可选中文本节点");
+        if (!config.isCover) {
+            let hasCover = false;
+
+            if (range.cloneContents().querySelector(markSelector)) {
+                //1.选中范围内存在已经标注的节点
+                hasCover = true;
+            } else {
+                if (range.commonAncestorContainer.parentNode?.nodeType === 1) {
+                    const pNode = range.commonAncestorContainer.parentNode as Element
+                    if (pNode.getAttribute(markSelector)) {
+                        //2.选中范围内在已经标注节点内部
+                        hasCover = true;
+                    }
+                }
+            }
+
+            if (hasCover) {
+                selection.removeAllRanges();
+                return this._onSelected("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
+            }
         }
 
-        if (!config.isCover&&this.hasCoverSelector(range,markSelector)) {
+        if (range.startContainer.nodeType !== 3 || range.endContainer.nodeType !== 3) {
             selection.removeAllRanges();
-            return this._onError("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
+            return this._onSelected("只可选中文本节点");
         }
 
         let sCntr = range.startContainer as Text;
@@ -80,9 +105,10 @@ class JsMark {
             eCntr = endContainer.previousSibling as Text;
         }
 
-        const textNodes = Util.getTextNodes(range.commonAncestorContainer);
+        let textNodes = Util.getTextNodes(range.commonAncestorContainer);
+
         const offset = Util.getRelativeOffset(sCntr, this._element);
-        const rangeNodes = Util.sliceTextNodes(textNodes, sCntr, eCntr);
+        let rangeNodes = Util.sliceTextNodes(textNodes, sCntr, eCntr);
 
         this._onSelected({
             text: range.toString(),
@@ -95,29 +121,6 @@ class JsMark {
         selection.removeAllRanges();
         //将 Range 从使用状态中释放，改善性能
         range.detach && range.detach()
-    }
-
-    /**
-     * @intro 选中文档片段是否覆盖拥有属性名的元素
-     * @param range  选中文档片段
-     * @param attrName  属性名
-     * @returns 
-     */
-    private hasCoverSelector(range:Range,attrName:string):boolean{
-        let hasCover = false;
-        if (range.cloneContents().querySelector(`[${attrName}]`)) {
-            //1.选中范围内存在已经标注的节点
-            hasCover = true;
-        } else {
-            if (range.commonAncestorContainer.parentNode?.nodeType === 1) {
-                const pNode = range.commonAncestorContainer.parentNode as Element
-                if (pNode.getAttribute(attrName)) {
-                    //2.选中范围内在已经标注节点内部
-                    hasCover = true;
-                }
-            }
-        }
-        return hasCover
     }
 
     /**
@@ -175,6 +178,7 @@ class JsMark {
     repaintRange(rangeNode: RangeNodes) {
         let { uuid, className, textNodes } = rangeNode;
         let uid = uuid || Util.Guid()
+        console.log("rangeNode", rangeNode)
         textNodes.forEach((node) => {
             if (node.parentNode) {
                 let hl = document.createElement("span");
