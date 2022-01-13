@@ -25,197 +25,155 @@
             cursor: pointer;
             background: rgba(255, 0, 0, 0.3);
         }
+
+        .content {
+            padding: 20px 20%;
+        }
+
+        .ceshi{
+            background: white;
+        }
+    
+        
     </style>
 </head>
 
 <body>
-    <div id="highlight">
-        <article class="article"
-            style="margin-bottom: 3rem; padding: 2rem 0px 0px; color: #333333; font-family: -apple-system, system-ui, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif, system-ui, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial; font-size: 12px;"
-            data-entry-id="6966049183698534414" data-draft-id="6966048666557775886" data-original-type="0"
-            data-v-f84b151e="" data-v-39f74d6b="">
-            <h1 class="article-title" style="font-size: 2.5rem; margin: 0.67em 0px; line-height: 1.5;"
-                data-v-f84b151e="">S6的解构赋值是深拷贝or浅拷贝?</h1>
-            <div class="article-content" data-v-f84b151e="">
-                <div class="markdown-body"
-                    style="word-break: break-word; line-height: 1.75; font-size: 15px; overflow-x: hidden;">
-                    <blockquote
-                        style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
-                        <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">
-                            面试时候有面试官问到ES6的解构赋值是深拷贝还是浅拷贝?，这里做一个总结.</p>
-                    </blockquote>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">
-                        ES6的解构赋值，大家应该都清楚，就是可以快速取出数组或者对象中的值；我们先来看一个使用案例：</p>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;"><img
-                            class="medium-zoom-image"
-                            src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/623890ff103d494fa9f966465ff5075c~tplv-k3u1fbpfcp-zoom-1.image" />
-                    </p>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">更多的解构赋值知识可以查看:&nbsp;<a
-                            target="_blank" href="https://es6.ruanyifeng.com/#docs/destructuring"
-                            rel="noopener">es6.ruanyifeng.com/#docs/destr&hellip;</a></p>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">那么，ES6的解构赋值到底是深拷贝还是浅拷贝呢?</p>
-                    <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;"
-                        data-id="heading-0">我们先来看一下深拷贝和浅拷贝的定义</h3>
-                    <blockquote
-                        style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
-                        <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">
-                            深拷贝：修改新变量的值不会影响原有变量的值。默认情况下基本数据类型（number，string，null，undefined，boolean）都是深拷贝。</p>
-                    </blockquote>
-                    <blockquote
-                        style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
-                        <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">
-                            浅拷贝：修改新变量的值会影响原有的变量的值。默认情况下引用类型（object）都是浅拷贝。</p>
-                    </blockquote>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">我们先开看一个基本类型，直接用等号赋值的例子</p>
-                    <pre
-                        style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">let user = 'siri'
-            let stu = user
-            stu = 'jack'
-            console.log('输出：',stu)
-            // 输出：jack
-            console.log('输出：',user)
-            // 输出：siri
-            
-            <span class="copy-code-btn">复制代码</span></code></pre>
-                    <blockquote
-                        style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
-                        <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">由上方的例子可以知道：</p>
-                    </blockquote>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">stu的数值改变并不会影响user
-                        ,所以基本数据类型，直接用等号赋值，也都是深拷贝；</p>
-                    <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;"
-                        data-id="heading-1">我们再看一个引用类型，直接用等号赋值的例子</h3>
-                    <pre
-                        style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">let obj1 = {
-              name:'siri',
-              age:18
-            }
-            let obj2 = obj1
-            
-            obj2.name = 'jack'
-            console.log('obj1',obj1)
-            console.log('obj2',obj2)
-            // obj1 {name: "jack", age: 18}
-            // obj2 {name: "jack", age: 18}
-            
-            <span class="copy-code-btn">复制代码</span></code></pre>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;"><img
-                            class="medium-zoom-image"
-                            src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c66284c472c64b2d9103747a46b84d2b~tplv-k3u1fbpfcp-zoom-1.image" />
-                    </p>
-                    <blockquote
-                        style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
-                        <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">
-                            上方例子中我们可以看到，obj1赋值给obj2,然后改变obj2中的name值，发现obj2中的name也跟随着改变了，所以是浅拷贝。（因为他们引用的是同一个地址的数据！拷贝的时候并没有给obj2创造独立的内存，只是把obj1指向数据的&nbsp;指针&nbsp;拷贝给了obj2）
-                        </p>
-                    </blockquote>
-                    <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;"
-                        data-id="heading-2">上方的例子了解了之后 我们再回到解构赋值</h3>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">修改最上方的解构赋值代码，给name 和 age赋值
-                    </p>
-                    <pre
-                        style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">const userInfo = {
-               name:'siri',
-              age:18
-            }
-            let {name,age} = userInfo
-            name = 'jack'
-            age = 16
-            console.log('打印userInfo',userInfo)
-            // 打印userInfo {name: "siri", age: 18}
-            <span class="copy-code-btn">复制代码</span></code></pre>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">&nbsp;我们发现userInfo
-                        的数据并没有被改变，有同学会说，解构赋值好像是深拷贝啊？？？？？&nbsp;<img class="medium-zoom-image"
-                            src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d6df934ac3fd4030a7ab0618e7840c14~tplv-k3u1fbpfcp-zoom-1.image" />
-                    </p>
-                    <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;"
-                        data-id="heading-3">我们再修改一下代码看看</h3>
-                    <pre
-                        style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">const userInfo = {
-                name:'siri',
-                age:18,
-                detail:{
-                    qq:'1',
-                    email:'1366666@163.com'
-                }
-            }
-            let {name,age,detail} = userInfo
-            name = 'jack'
-            age = 16
-            detail.qq = "2"
-            console.log('打印userInfo',userInfo)
-            
-            <span class="copy-code-btn">复制代码</span></code></pre>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">打印信息：</p>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;"><img
-                            class="medium-zoom-image"
-                            src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f981a3907bf540df8d4ce606e7ab767e~tplv-k3u1fbpfcp-zoom-1.image" />
-                    </p>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">
-                        &nbsp;发现解构赋值出来的对象将原对象detail中的qq的数据修改了，这样看还是浅拷贝；</p>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">###总结：</p>
-                    <ul style="padding: 0px 0px 0px 28px; margin: 0px;">
-                        <li style="list-style: inherit; margin-bottom: 0px;">
-                            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">
-                                解构赋值，如果所解构的原对象是一维数组或对象，其本质就是对基本数据类型进行等号赋值，那它就是深拷贝；</p>
-                        </li>
-                        <li style="list-style: inherit; margin-bottom: 0px;">
-                            <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">
-                                如果是多维数组或对象，其本质就是对引用类型数据进项等号赋值，那它就是浅拷贝；</p>
-                        </li>
-                    </ul>
-                    <blockquote
-                        style="color: #666666; padding: 1px 23px; margin: 22px 0px; border-left: 4px solid #cbcbcb; background-color: #f8f8f8;">
-                        <p style="line-height: inherit; margin-top: 10px; margin-bottom: 10px;">
-                            结论：解构赋值是浅拷贝（因为它确实不能对多维数组或对象达到深拷贝的作用）；</p>
-                    </blockquote>
-                    <h3 style="line-height: 1.5; margin-top: 35px; margin-bottom: 10px; padding-bottom: 0px; font-size: 18px;"
-                        data-id="heading-4">深拷贝的实现方法</h3>
-                    <p style="line-height: inherit; margin-top: 22px; margin-bottom: 22px;">本质还是将对象拆开为基本数据类型进行赋值。</p>
-                    <pre
-                        style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 1em; position: relative; background: #f8f8f8; overflow: auto; line-height: 1.75;"><code class="copyable" style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 12px; word-break: normal; border-radius: 2px; overflow-x: auto; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 15px 12px; margin: 0px; display: block;">function deepClone(source){
-              const targetObj = source.constructor === Array ? [] : {}; // 判断复制的目标是数组还是对象
-              for(let keys in source){ // 遍历目标
-                if(source.hasOwnProperty(keys)){
-                  if(source[keys] &amp;&amp; typeof source[keys] === 'object'){ // 如果值是对象，就递归一下
-                    targetObj[keys] = source[keys].constructor === Array ? [] : {};
-                    targetObj[keys] = deepClone(source[keys]);
-                  }else{ // 如果不是，就直接赋值
-                    targetObj[keys] = source[keys];
-                  }
-                }
-              }
-              return targetObj;
-            }
-            <span class="copy-code-btn">复制代码</span></code></pre>
+    <div id="highlight" class="content">
+        <sr-read style='font-family: "Microsoft Yahei"; margin: 20px 17%;'>
+            <h1 class="ceshi" style="text-align: center;font-size: 40px;"> Baleen whales eat — and poop — a lot more than we thought
+            </h1>
+
+
+            <sr-rd-content>
+                <div id="readability-page-1" class="page">
+                    <div role="presentation">
+                        <div>
+                            <div data-qa-selector="article_text" elementtiming="article-text">
+                                <div>
+                                    <div style="display: inline-block;width:20px">34      </div>
+                                    <p data-paragraph-index="0">Whale hunting has plundered the seas of giant whales for
+                                        much of the last century. With the help of modern technology, people have killed
+                                        up to 99 percent of certain species. Some scientists thought this would cause
+                                        krill — the tiny crustaceans that many whales gulp down — to explode in number.
+                                        But that didn't happen. New research suggests whale poop, or a lack of it, may
+                                        explain this.</p>
+                                    <p data-paragraph-index="1">Krill numbers in Antarctic waters with lots of whale
+                                        hunting have dropped by more than 80 percent. With fewer of these crustaceans,
+                                        many other krill predators have gone hungry, such as seabirds and fish.</p>
+                                    <div>
+                                        <img src="./demo1.jpg" alt="2" style="width:100%">
+                                    </div>
+                                    <p data-paragraph-index="2">A new study looked at the eating habits of baleen whales
+                                        (those that use long keratin plates of baleen to help snag prey). These include
+                                        blue and humpback whales. Apparently, baleen whales eat about three times as
+                                        much food as we thought. Lots more food means lots more poop. That poop is rich
+                                        in iron. So with fewer whales, ecosystems get less iron and other crucial
+                                        nutrients that they need to thrive. That hurts other species, including krill.
+                                    </p>
+                                    <p data-paragraph-index="3">The team shared its findings in the November 4 issue of
+                                        Nature. Restoring whale populations, the researchers say, could help these
+                                        ecosystems recover.</p>
+                                    <p data-paragraph-index="4">"It's hard to know what role whales play in ecosystems
+                                        without knowing how much they're eating," says Joe Roman. This marine ecologist
+                                        wasn't involved in the new study. He works at the University of Vermont in
+                                        Burlington. How much whales eat had not been well known, he says. This study
+                                        will"allow us to better understand how the widespread depletion of whales has
+                                        impacted ocean ecosystems."</p>
+                                    <h2 id="sr-toc-0"><strong nodekey="11:1-12:222">Whale Of A Problem</strong></h2>
+                                    <div>
+                                        <img src="./demo2.jpg" alt="2" style="width:100%">
+                                    </div>
+                                    <p data-paragraph-index="5">Gauging whale diets is not easy. Some of these animals
+                                        are around the size of Boeing 737 jets. They gulp down hordes of centimeter-long
+                                        invertebrates that live far below the surface of the ocean. In the past,
+                                        scientists have relied on assessing what these behemoths eat by dissecting the
+                                        stomachs of dead whales. Or researchers estimated how much energy whales should
+                                        need based on their size.</p>
+                                    <p data-paragraph-index="6">"These studies were educated guesses," says Matthew
+                                        Savoca. But, he adds, "none were conducted on live whales in the wild." Savoca
+                                        is a marine biologist at Hopkins Marine Station. Part of Stanford University,
+                                        it's in Pacific Grove, California.</p>
+                                    <p data-paragraph-index="7">New technology allowed Savoca and his colleagues to get
+                                        a more precise estimate of what whales eat. He notes that this was "a chance to
+                                        answer a really basic biological question about some of the most charismatic
+                                        animals on Earth."</p>
+                                    <p data-paragraph-index="8">His team needed to know three things. First, how often
+                                        do whales feed? Second, how big is each of their gulps of prey? And third, how
+                                        much food is in each of those gulps? To gather these data, the team
+                                        suction-cupped sensors to the backs of 321 whales. They came from seven
+                                        different species. The sensors tracked when the whales lunged for prey. Drones
+                                        also snapped photos of 105 whales to help the researchers estimate gulp size.
+                                        Finally, sonar mapping revealed the density of krill in the whales' feeding
+                                        areas.</p>
+                                    <p data-paragraph-index="9">Combining these data provided a more detailed look at
+                                        feeding than ever before, says Sarah Fortune. Savoca and his colleagues
+                                        "measured all the things you need to measure to get an accurate estimate of
+                                        consumption." Fortune is a marine ecologist who did not take part in the new
+                                        study. She works at Fisheries and Oceans Canada in Vancouver, British Columbia.
+                                    </p>
+                                    <p data-paragraph-index="10">On average, baleen whales eat about three times as much
+                                        food as earlier estimates had suggested. For example, a blue whale can gulp down
+                                        16 metric tons (about 35,000 pounds) of krill — about 10 million to 20 million
+                                        calories — in a day. That's like one of these supersized creatures wolfing down
+                                        30,000 Big Macs, Savoca says.</p>
+                                    <p data-paragraph-index="11">Whales don't eat that much every day. At times when the
+                                        animals are migrating vast distances, they may go months without taking a bite.
+                                        But the sheer volume of food that they eat and then poop out suggests that
+                                        whales play a far bigger role in shaping ocean ecosystems than we thought,
+                                        Savoca says. That makes the loss of whales that much more harmful.</p>
+                                    <h2 id="sr-toc-1"><strong nodekey="28:1-29:292">Why Whales Are A Big Deal</strong>
+                                    </h2>
+                                    <p data-paragraph-index="12">Whales are nutrient cyclers. They feed on iron-rich
+                                        krill in the deep sea. Later, they return some of that iron to the surface in
+                                        the form of poop. This helps keep iron and other crucial nutrients in the food
+                                        web. Hunting whales might have broken this iron cycle. Fewer whales bring less
+                                        iron to the ocean's surface. With less iron there, phytoplankton blooms shrink.
+                                        Krill and many other creatures that feast on phytoplankton may now suffer. Such
+                                        changes will make the ecosystem suffer, Savoca says.</p>
+                                    <p data-paragraph-index="13">The industrial hunting of whales killed millions of the
+                                        huge animals in the 20th century. Researchers now estimate that before then,
+                                        baleen whales in the Southern Ocean alone consumed 430 million metric tons of
+                                        krill each year. Today, less than half that amount of krill lives in those
+                                        waters. Smaller whale populations are likely the reason for this, Savoca says.
+                                        "When you wholesale remove them, the system becomes, on average, less
+                                        [healthy]."</p>
+                                    <p data-paragraph-index="14">Some whale populations are rebounding. If whales and
+                                        krill returned to their early 1900s numbers, the productivity of the Southern
+                                        Ocean could be boosted by 11 percent, the researchers calculate. That increased
+                                        productivity would translate into more carbon-rich life, from krill to blue
+                                        whales. Together, those creatures would store 215 million metric tons of carbon
+                                        each year. The carbon stored in those creatures wouldn't be able to escape into
+                                        the atmosphere and contribute to global warming. It would be like taking more
+                                        than 170 million cars off the road each year.</p>
+                                    <p data-paragraph-index="15">"Whales are not the solution to climate change," Savoca
+                                        says. "But rebuilding whale populations would help a sliver, and we need lots of
+                                        slivers put together to solve the problem."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </article>
-        <div class="tag-list-box"
-            style="display: flex; flex-wrap: wrap; align-items: flex-start; margin-bottom: 2rem; padding-top: 2rem; border-top: 1px solid #e5e6eb; color: #333333; font-family: -apple-system, system-ui, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif, system-ui, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial; font-size: 12px;"
-            data-v-39f74d6b="" data-v-f84b151e="">
-            <div class="tag-list"
-                style="display: flex; font-size: 1.167rem; line-height: 2.286; margin-right: 1.42rem; flex-shrink: 0;"
-                data-v-39f74d6b="" data-v-f84b151e=""></div>
-        </div>
+            </sr-rd-content>
+
+        </sr-read>
     </div>
     <script src="../dist/js-mark.js"></script>
     <script type="module">
-        // import JsMark from "../build/index.js";
+        function setLocal(position) {
+            let data = getLocal();
+            data.push(position);
+            localStorage.setItem("data", JSON.stringify(data));
+        }
+        function getLocal() {
+            return JSON.parse(localStorage.getItem("data")) || [];
+        }
+        function clearItemLocal(id) {
+            let data = getLocal();
+            data = data.filter((item) => item.uuid !== id);
+            localStorage.setItem("data", JSON.stringify(data));
+        }
         window.onload = function () {
-            function setLocal(position) {
-                let data = getLocal();
-                data.push(position);
-                localStorage.setItem("data", JSON.stringify(data));
-            }
-            function getLocal() {
-                return JSON.parse(localStorage.getItem("data")) || [];
-            }
-            function clearItemLocal(id) {
-                let data = getLocal();
-                data = data.filter((item) => item.uuid !== id);
-                localStorage.setItem("data", JSON.stringify(data));
-            }
             let cssIndex = 0;
             let cssStyle = [
                 "annotator-hl",
@@ -225,7 +183,11 @@
             ];
 
             let jsMark = new JsMark({
-                el: document.querySelector("#highlight")
+                el: document.querySelector("#highlight"),
+                options:{
+                    isCover:true,
+                    ignoreClass:[22323]
+                }
             });
             //选中文本后回调
             jsMark.onSelected = function (res) {
@@ -233,6 +195,13 @@
                     textNodes: res.textNodes,
                     className: cssStyle[cssIndex]
                 });
+                // const ele = document.createElement("span")
+                // ele.textContent="[4444]"
+                // ele.classList="ceshi annotator-hl"
+                // ele.setAttribute("data-selector","ceshi")
+                
+                // res.textNodes[0].parentNode.append(ele)
+
                 ++cssIndex >= cssStyle.length ? (cssIndex = 0) : cssIndex;
                 if (!res.hasStoreRender) {
                     setLocal({
@@ -250,9 +219,10 @@
                     clearItemLocal(uid);
                 }
             };
-            console.log(jsMark.findWord("深拷贝"))
             //本地数据渲染
-            jsMark.renderStore(jsMark.findWord("深拷贝"));
+            // jsMark.renderStore(jsMark.findWord("1"));
+            // jsMark.renderStore(getLocal());
+            
         }
     </script>
 </body>

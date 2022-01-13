@@ -7,19 +7,25 @@ export function Guid(): string {
     return v.toString(16);
   });
 }
-/** 获取所有的文本节点*/
-export function getTextNodes(ele: Element | Node): Text[] {
-  let nodes = [];
-  let e = ele.childNodes;
+
+/**
+ * @intro 获取节点下所有的文本节点
+ * @param node 节点
+ * @returns 所有文本节点
+ */
+export function getTextNodes(node:Node): Text[] {
+  let textNodes = [];
+  let e = node.childNodes;
+  // console.log("e",e)
   for (let i = 0; i < e.length; i++) {
-    let element = e[i] as Text;
-    if (element.nodeType !== NodeTypes.TEXT_NODE) {
-      nodes.push(...getTextNodes(element));
-    } else {
-      nodes.push(element);
+    let element = e[i];
+    if (element.nodeType === NodeTypes.TEXT_NODE) {
+      textNodes.push(element as Text);
+    } else if(element.nodeType === NodeTypes.ELEMENT_NODE) {
+      textNodes.push(...getTextNodes(element));
     }
   }
-  return nodes;
+  return textNodes;
 }
 /** 获取字符相对于root元素的偏移量*/
 export function relativeOffsetChat(content: string, root: Element):SelectInfo[] {
@@ -42,8 +48,13 @@ export function relativeOffsetChat(content: string, root: Element):SelectInfo[] 
   });
   return hitContent.flat(Infinity) as SelectInfo[];
 }
-/** 获取ele元素相对于root元素的偏移量*/
-export function relativeOffset(ele: Text, root: Element): number {
+/**
+ * @intro 获取节点相对于元素的偏移量
+ * @param ele 节点
+ * @param root 相对元素
+ * @returns 偏移量
+ */
+export function getRelativeOffset(ele: Node, root: Element): number {
   let textNodes = getTextNodes(root);
   let i = textNodes.indexOf(ele);
   let offset = 0;
@@ -69,4 +80,19 @@ export function relativeNode(root: Element, offset: number): null | Text {
     }
   }
   return node as Text;
+}
+/**
+ * @intro 截取文本节点
+ * @param textNodes 文本节点组
+ * @param startTextNode 截取开始节点
+ * @param endTextNode 截取终止节点
+ * @returns 截取后节点
+ */
+export function sliceTextNodes(textNodes: Text[], startTextNode: Text,endTextNode:Text) {
+  let startIndex = textNodes.indexOf(startTextNode);
+  let endIndex = textNodes.indexOf(endTextNode);
+  let rangeText = textNodes.filter((_, i) => {
+      return startIndex <= i && endIndex >= i;
+  });
+  return rangeText;
 }

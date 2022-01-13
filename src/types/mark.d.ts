@@ -26,6 +26,7 @@ interface RangeNodes{
 }
 interface options{
     isCover?:boolean  //是否覆盖
+    ignoreClass?:string[] //划词忽略的class
 }
 interface opsConfig{
     el:Element,         //要挂载的元素节点

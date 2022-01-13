@@ -23,14 +23,14 @@ export default {
     babel({
       exclude: "node_modules/**",
     }),
-    terser({
-      output: {
-        ascii_only: true, // 仅输出ascii字符
-      },
-      compress: {
-        pure_funcs: ["console.log"], // 去掉console.log函数
-      },
-    }),
+    // terser({
+    //   output: {
+    //     ascii_only: true, // 仅输出ascii字符
+    //   },
+    //   compress: {
+    //     pure_funcs: ["console.log"], // 去掉console.log函数
+    //   },
+    // }),
     typescript(),
   ],
 };
