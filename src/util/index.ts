@@ -65,7 +65,7 @@ export function relativeOffsetChat(content: string, root: Element): SelectInfo[]
  * @param root 相对元素
  * @returns 偏移量
  */
-export function getRelativeOffset(ele: Node, root: Element): number {
+export function getRelativeOffset(ele: textEle, root: Element): number {
   let textNodes = getTextNodes(root);
   let i = textNodes.indexOf(ele);
   let offset = 0;

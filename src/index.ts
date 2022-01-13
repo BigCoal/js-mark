@@ -157,7 +157,6 @@ class JsMark {
      */
     renderStore(obj: SelectInfo[]): void {
         if (this._selection == null) return;
-
         obj.map((item) => {
             let startParentNode = Util.relativeNode(this._element, item.offset + 1);
             let endParentNode = Util.relativeNode(
@@ -178,7 +177,7 @@ class JsMark {
                         item.offset - Util.getRelativeOffset(startParentNode, this._element),
                     storeRenderOther: item,
                 }
-                this._captureSelection(obj);
+                this._captureSelection(obj as any);
             }
         });
     }
