@@ -14,7 +14,7 @@ export function Guid(): string {
  * @param ignoreClass 忽略class下的文本节点
  * @returns 所有文本节点
  */
-export function getTextNodes(node: Node,ignoreClass:string[]=[],ignore=true): textEle[] {
+export function getTextNodes(node: Node,ignoreClass:string[]=[],ignore=false): textEle[] {
   let textNodes = [];
   let e = node.childNodes;
 
@@ -24,10 +24,14 @@ export function getTextNodes(node: Node,ignoreClass:string[]=[],ignore=true): te
     const classNames =  getClassNames(element)
     if(ignoreClass.length>0&&classNames.length>0){
       if(ignoreClass.some(item=>classNames.includes(item))){
-        element.ignore = false;
+        element.ignore = true;
       }
     }
-    if (element.nodeType === NodeTypes.TEXT_NODE) {
+    if (element.nodeType === NodeTypes.TEXT_NODE&&element.parentElement?.nodeName!=="SCRIPT"&&element.textContent?.trim()!=="") {
+      // console.log("element",element.nodeType,element.nodeName)
+     
+      // console.dir(element)
+      // console.dir(element.textContent)
       if (element.textContent && element.textContent !== '\n') {
         textNodes.push(element as unknown as textEle);
       }
@@ -123,13 +127,3 @@ function getClassNames(node: Node) {
 }
 
 
-export function  setEleNoSelect(ele:Element,classNames:string[]){
-  classNames.map(item=>{
-    const hitEle = ele.querySelectorAll(`.${item}`)
-    if(!hitEle) return;
-    for (let i = 0; i < hitEle.length; i++) {
-      const element = hitEle[i] as HTMLElement;
-      element.style.userSelect='none'
-    }
-  })
-}

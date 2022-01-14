@@ -1,6 +1,8 @@
 import babel from "rollup-plugin-babel";
 import { terser } from "rollup-plugin-terser";
 import typescript from "@rollup/plugin-typescript";
+import resolved from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
 const path = require("path");
 
 const resolve = (dir) => {
@@ -23,6 +25,8 @@ export default {
     babel({
       exclude: "node_modules/**",
     }),
+    resolved(),
+		commonjs(),
     // terser({
     //   output: {
     //     ascii_only: true, // 仅输出ascii字符

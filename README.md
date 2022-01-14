@@ -154,6 +154,12 @@ jsMark.clearMarkAll();
 jsMark.destroy();
 ```
 
+##### 9.漂亮代码：``jsMark.beautifyHTML``
+当删除节点后，如果你不希望你的文本节点被拆离，可以调用此方法来格式化容器内的代码
+```js
+jsMark.beautifyHTML();
+```
+
 
 ## 兼容性
 

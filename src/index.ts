@@ -1,7 +1,11 @@
+import { beautify } from 'js-beautify';
 import * as Util from "./util/index.js";
 import config from "./lib/config.js";
 import { mergeOptions } from "./core/mergeOptions.js";
 import { hasOwn } from "./lib/index.js";
+
+import './static/beautify.js';
+import { getOptionalVText, getTextContainer, initVTextNodes, sliceVTextNode, splitVTextNode } from "./core/vTextNode.js";
 
 const markSelector = "data-selector"
 class JsMark {
@@ -11,6 +15,7 @@ class JsMark {
     public onClick: Nullable<Function> = null;
 
     constructor(ops: opsConfig) {
+
         const ele = this._element = ops.el;
         this._selection = window.getSelection();
 
@@ -23,12 +28,40 @@ class JsMark {
 
         mergeOptions(config, ops.options)
 
-        if (config.ignoreClass.length > 0) {
-            Util.setEleNoSelect(this._element, config.ignoreClass)
+        if (config.beautify) {
+            this._beautifyHTML(ele)
         }
 
+        if (config.ignoreClass.length > 0) {
+            this._setEleNoSelect(this._element, config.ignoreClass)
+        }
+
+        initVTextNodes(Util.getTextNodes(ele, config.ignoreClass))
         ele.addEventListener("mouseup", this._onMouseUp.bind(this));
     }
+
+    //格式化html代码，去除空行
+    private _beautifyHTML(ele: Element) {
+        const beautify = window.html_beautify;
+        console.log(beautify(ele.innerHTML, {
+            "preserve_newlines": false, //保留空行
+        }))
+        ele.innerHTML = beautify(ele.innerHTML, {
+            "preserve_newlines": false, //保留空行
+        })
+        
+    }
+    //设置元素无法选中属性
+    private _setEleNoSelect(ele:Element,classNames:string[]){
+        classNames.map(item=>{
+          const hitEle = ele.querySelectorAll(`.${item}`)
+          if(!hitEle) return;
+          for (let i = 0; i < hitEle.length; i++) {
+            const element = hitEle[i] as HTMLElement;
+            element.style.userSelect='none'
+          }
+        })
+      }
 
     private _onClick(e: Event) {
         if (e.target !== null && "dataset" in e.target) {
@@ -57,18 +90,6 @@ class JsMark {
         const range = selection.getRangeAt(0);
         this._captureSelection(range);
     }
-    //清除text节点中在userSelect为none的test节点
-    private _clearUserSelectText(rangeNodes: textEle[]) {
-        //解决从左侧划区，终点在userSelect:none区域时，会选中userSelect:none的问题
-        let textNodes: textEle[] = []
-        for (let i = 0; i < rangeNodes.length; i++) {
-            const item = rangeNodes[i];
-            if (item.ignore == true) {
-                textNodes.push(item)
-            }
-        }
-        return textNodes
-    }
     //捕获已选中节点
     private _captureSelection(range: markRange): void {
         let selection = this._selection;
@@ -79,36 +100,35 @@ class JsMark {
             return this._onError("只可选中文本节点");
         }
 
-        if (!config.isCover &&!range.storeRenderOther&& this.hasCoverSelector(range, markSelector)) {
+
+        if (!config.isCover && !range.storeRenderOther && this.hasCoverSelector(range, markSelector)) {
             selection.removeAllRanges();
             return this._onError("不允许覆盖标注，详细请看配置文档，或设置isCover为true");
         }
 
 
+        const sCntr = range.startContainer as textEle;
+        const eCntr = range.endContainer as textEle;
+        let endTextNext = splitVTextNode(eCntr, range.endOffset)
+        const startText = splitVTextNode(sCntr, range.startOffset)
 
-        let sCntr = range.startContainer as textEle;
-        let eCntr = range.endContainer as textEle;
+        
 
-        if (sCntr !== eCntr) {
-            let endContainer = eCntr.splitText(range.endOffset);
-            eCntr = endContainer.previousSibling as textEle;
-            sCntr = sCntr.splitText(range.startOffset);
-        } else {
-            let endContainer = eCntr.splitText(range.endOffset);
-            sCntr = sCntr.splitText(range.startOffset);
-            eCntr = endContainer.previousSibling as textEle;
+        if (!startText || !endTextNext) return;
+
+        if (config.ignoreClass.length > 0) {
+            endTextNext = getOptionalVText(endTextNext)
+            console.log(endTextNext)
         }
 
+        const textNodes = sliceVTextNode(startText, endTextNext,config.ignoreClass.length > 0) || []
+        const offset = startText.offset;
 
-        const commonTextNodes = Util.getTextNodes(range.commonAncestorContainer, config.ignoreClass);
-        let rangeNodes = Util.sliceTextNodes(commonTextNodes, sCntr, eCntr);
-        let textNodes: textEle[] = config.ignoreClass.length > 0 ? this._clearUserSelectText(rangeNodes) : rangeNodes
-
-
-        const offset = Util.getRelativeOffset(sCntr, this._element);
+        let text = ""
+        textNodes?.map(item => text += item.textContent)
 
         this._onSelected({
-            text: range.toString(),
+            text,
             offset,
             hasStoreRender: hasOwn(range, "storeRenderOther"),
             textNodes,
@@ -158,27 +178,28 @@ class JsMark {
     renderStore(obj: SelectInfo[]): void {
         if (this._selection == null) return;
         obj.map((item) => {
-            let startParentNode = Util.relativeNode(this._element, item.offset + 1);
-            let endParentNode = Util.relativeNode(
-                this._element,
-                item.offset + item.text.length
-            );
-            if (endParentNode && startParentNode) {
+            const end = item.offset + item.text.length;
+            let startContainer = getTextContainer(item.offset);
+
+            let endContainer = getTextContainer(end);
+
+            if (startContainer && endContainer) {
+                const endOffset = end - endContainer.offset
+                const startOffset = item.offset - startContainer.offset
+
                 const obj = {
                     collapsed: false,
                     commonAncestorContainer: this._element,
-                    endContainer: endParentNode,
-                    endOffset:
-                        item.offset +
-                        item.text.length -
-                        Util.getRelativeOffset(endParentNode, this._element),
-                    startContainer: startParentNode,
-                    startOffset:
-                        item.offset - Util.getRelativeOffset(startParentNode, this._element),
+                    endContainer: endContainer.text,
+                    endOffset,
+                    startContainer: startContainer.text,
+                    startOffset,
                     storeRenderOther: item,
                 }
+                console.log(obj)
                 this._captureSelection(obj as any);
             }
+
         });
     }
     /**
@@ -196,7 +217,7 @@ class JsMark {
      */
     repaintRange(rangeNode: RangeNodes) {
         let { uuid, className, textNodes } = rangeNode;
-       
+        
         let uid = uuid || Util.Guid()
         textNodes.forEach((node) => {
             if (node.parentNode) {
@@ -231,6 +252,13 @@ class JsMark {
                 node.parentNode.replaceChild(fragment, node);
             }
         });
+        //由于索引改变，需要重新初始化虚拟节点，
+        initVTextNodes(Util.getTextNodes(this._element, config.ignoreClass))
+    }
+    //漂亮代码
+    beautifyHTML(){
+        this._beautifyHTML(this._element)
+        initVTextNodes(Util.getTextNodes(this._element, config.ignoreClass))
     }
 }
 export default JsMark;
