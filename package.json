@@ -8,9 +8,7 @@
   "homepage": "https://github.com/know-vampire/js-annotation.git",
   "scripts": {
     "dev": "rollup --config -w",
-    "build": "npm-run-all  build:*",
-    "build:ts": "tsc",
-    "build:rollup": "rollup --config"
+    "build": "rollup --config"
   },
   "repository": {
     "type": "git",
@@ -55,6 +53,7 @@
   },
   "dependencies": {
     "@rollup/plugin-typescript": "^8.3.0",
+    "@types/js-beautify": "^1.13.3",
     "js-beautify": "^1.14.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",

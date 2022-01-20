@@ -1,13 +1,13 @@
-import { beautify } from 'js-beautify';
 import * as Util from "./util/index.js";
 import config from "./lib/config.js";
 import { mergeOptions } from "./core/mergeOptions.js";
 import { hasOwn } from "./lib/index.js";
 
-import './static/beautify.js';
-import { getOptionalVText, getTextContainer, initVTextNodes, sliceVTextNode, splitVTextNode } from "./core/vTextNode.js";
+import jsBeautify from 'js-beautify'
+import { getOptionalVText, getTextContainer, initVTextNodes, matchVText, sliceVTextNode, splitVTextNode } from "./core/vTextNode.js";
 
 const markSelector = "data-selector"
+const beautify = jsBeautify.html_beautify
 class JsMark {
     private _element: Element;
     private _selection: Nullable<Selection>;
@@ -42,10 +42,6 @@ class JsMark {
 
     //格式化html代码，去除空行
     private _beautifyHTML(ele: Element) {
-        const beautify = window.html_beautify;
-        console.log(beautify(ele.innerHTML, {
-            "preserve_newlines": false, //保留空行
-        }))
         ele.innerHTML = beautify(ele.innerHTML, {
             "preserve_newlines": false, //保留空行
         })
@@ -118,8 +114,9 @@ class JsMark {
 
         if (config.ignoreClass.length > 0) {
             endTextNext = getOptionalVText(endTextNext)
-            console.log(endTextNext)
         }
+
+        if (!endTextNext) return;
 
         const textNodes = sliceVTextNode(startText, endTextNext,config.ignoreClass.length > 0) || []
         const offset = startText.offset;
@@ -196,7 +193,6 @@ class JsMark {
                     startOffset,
                     storeRenderOther: item,
                 }
-                console.log(obj)
                 this._captureSelection(obj as any);
             }
 
@@ -206,9 +202,11 @@ class JsMark {
      * @intro 查找词在文章中位置
      * @param word 词语 
      */
-    findWord(word: string): Nullable<SelectBase[]> {
+    findWord(word: string) {
+        this.beautifyHTML()
         if (!word) return null;
-        return Util.relativeOffsetChat(word, this._element)
+        
+        return matchVText(word)
     }
     /**
      * @intro 渲染选中的文本节点
@@ -241,7 +239,11 @@ class JsMark {
      */
     deleteMark(uuid: Number): void {
         let eleArr = document.querySelectorAll(`span[${markSelector}="${uuid}"]`);
-        eleArr.forEach((node) => {
+        this._removeMark(eleArr)
+    }
+
+    private _removeMark(eleS:NodeListOf<Element>){
+        eleS.forEach((node) => {
             if (node.parentNode) {
                 const fragment = document.createDocumentFragment();
                 let childNodes = node.childNodes;

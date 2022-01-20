@@ -1,4 +1,3 @@
-import { beautify } from 'js-beautify';
 
 export default  {
     beautify:true,//是否格式化代码结构
