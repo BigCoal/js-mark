@@ -31,7 +31,7 @@ interface options{
     ignoreClass?:string[] //划词忽略的class
 }
 interface opsConfig{
-    el:Element,         //要挂载的元素节点
+    el:HTMLElement,         //要挂载的元素节点
     options?:options  //配置
 }
 

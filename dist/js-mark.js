@@ -51,6 +51,17 @@
         }
         return classNames;
     }
+    function getOffset(ele, targetEle) {
+        let parent = ele.offsetParent;
+        let top = ele.offsetTop;
+        let left = ele.offsetLeft;
+        while (parent !== targetEle && parent !== null) {
+            top += parent.offsetTop;
+            left += parent.offsetLeft;
+            parent = parent.offsetParent;
+        }
+        return { top, left };
+    }
 
     var config = {
         beautify: true,
@@ -5375,11 +5386,12 @@
 
     const markSelector = "data-selector";
     const beautify = js.html_beautify;
+    let markContainer;
     class JsMark {
         constructor(ops) {
             this.onSelected = null;
             this.onClick = null;
-            const ele = this._element = ops.el;
+            const ele = markContainer = this._element = ops.el;
             this._selection = window.getSelection();
             if (ele.nodeType !== 1) {
                 this._onError("请挂载dom节点");
@@ -5417,7 +5429,9 @@
             if (e.target !== null && "dataset" in e.target) {
                 let selectorId = e.target.dataset.selector;
                 if (selectorId) {
-                    this.onClick && this.onClick(selectorId);
+                    let eleArr = document.querySelectorAll(`span[${markSelector}="${selectorId}"]`);
+                    const { top: offsetTop, left: offsetLeft } = getOffset(eleArr[0], markContainer);
+                    this.onClick && this.onClick({ uid: selectorId, offsetTop, offsetLeft });
                 }
             }
         }
@@ -5526,6 +5540,8 @@
         repaintRange(rangeNode) {
             let { uuid, className, textNodes } = rangeNode;
             let uid = uuid || Guid();
+            let offsetTop = null;
+            let offsetLeft = null;
             textNodes.forEach((node) => {
                 if (node.parentNode) {
                     let hl = document.createElement("span");
@@ -5538,13 +5554,25 @@
                     hl.setAttribute(markSelector, uid);
                     node.parentNode.replaceChild(hl, node);
                     hl.appendChild(node);
+                    if (offsetTop == null) {
+                        const offset = getOffset(hl, markContainer);
+                        offsetTop = offset.top;
+                        offsetLeft = offset.left;
+                    }
                 }
             });
-            return uid;
+            return { uid, offsetTop, offsetLeft };
         }
         deleteMark(uuid) {
             let eleArr = document.querySelectorAll(`span[${markSelector}="${uuid}"]`);
             this._removeMark(eleArr);
+        }
+        replaceMarkClass(uuid, className) {
+            console.log(uuid);
+            let eleArr = document.querySelectorAll(`span[${markSelector}="${uuid}"]`);
+            eleArr.forEach((node) => {
+                node.className = className;
+            });
         }
         _removeMark(eleS) {
             eleS.forEach((node) => {

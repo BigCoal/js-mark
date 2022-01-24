@@ -14,22 +14,22 @@ export function Guid(): string {
  * @param ignoreClass 忽略class下的文本节点
  * @returns 所有文本节点
  */
-export function getTextNodes(node: Node,ignoreClass:string[]=[],ignore=false): textEle[] {
+export function getTextNodes(node: Node, ignoreClass: string[] = [], ignore = false): textEle[] {
   let textNodes = [];
   let e = node.childNodes;
 
   for (let i = 0; i < e.length; i++) {
     let element = e[i] as ele;
     element.ignore = ignore;
-    const classNames =  getClassNames(element)
-    if(ignoreClass.length>0&&classNames.length>0){
-      if(ignoreClass.some(item=>classNames.includes(item))){
+    const classNames = getClassNames(element)
+    if (ignoreClass.length > 0 && classNames.length > 0) {
+      if (ignoreClass.some(item => classNames.includes(item))) {
         element.ignore = true;
       }
     }
-    if (element.nodeType === NodeTypes.TEXT_NODE&&element.parentElement?.nodeName!=="SCRIPT"&&element.textContent?.trim()!=="") {
+    if (element.nodeType === NodeTypes.TEXT_NODE && element.parentElement?.nodeName !== "SCRIPT" && element.textContent?.trim() !== "") {
       // console.log("element",element.nodeType,element.nodeName)
-     
+
       // console.dir(element)
       // console.dir(element.textContent)
       if (element.textContent && element.textContent !== '\n') {
@@ -37,7 +37,7 @@ export function getTextNodes(node: Node,ignoreClass:string[]=[],ignore=false): t
       }
 
     } else if (element.nodeType === NodeTypes.ELEMENT_NODE) {
-      textNodes.push(...getTextNodes(element,ignoreClass,element.ignore ));
+      textNodes.push(...getTextNodes(element, ignoreClass, element.ignore));
     }
   }
   return textNodes;
@@ -117,13 +117,29 @@ export function sliceTextNodes(textNodes: textEle[], startTextNode: textEle, end
  * @returns 
  */
 function getClassNames(node: Node) {
-  let classNames:string[] = []
+  let classNames: string[] = []
   if (node.nodeType === NodeTypes.ELEMENT_NODE) {
     const ele = (node as Element);
-    classNames =ele.className?ele.className.split(" "):[]
+    classNames = ele.className ? ele.className.split(" ") : []
   }
   return classNames
 
 }
 
-
+/**
+ * 获取当前元素距离目标元素的偏移量，目标元素无法offsetParent则为body的偏移量
+ * @param ele 
+ * @param targetEle 
+ * @returns 
+ */
+export function getOffset(ele: HTMLElement, targetEle: HTMLElement) {
+  let parent = ele.offsetParent as HTMLElement
+  let top = ele.offsetTop;
+  let left = ele.offsetLeft;
+  while (parent !== targetEle && parent !== null) {
+    top += parent.offsetTop;
+    left += parent.offsetLeft;
+    parent = parent.offsetParent as HTMLElement ;
+  }
+  return {top,left}
+}

@@ -7,7 +7,8 @@ import jsBeautify from 'js-beautify'
 import { getOptionalVText, getTextContainer, initVTextNodes, matchVText, sliceVTextNode, splitVTextNode } from "./core/vTextNode.js";
 
 const markSelector = "data-selector"
-const beautify = jsBeautify.html_beautify
+const beautify = jsBeautify.html_beautify;
+let markContainer:HTMLElement;
 class JsMark {
     private _element: Element;
     private _selection: Nullable<Selection>;
@@ -16,7 +17,7 @@ class JsMark {
 
     constructor(ops: opsConfig) {
 
-        const ele = this._element = ops.el;
+        const ele =markContainer= this._element = ops.el;
         this._selection = window.getSelection();
 
         if (ele.nodeType !== 1) {
@@ -63,7 +64,11 @@ class JsMark {
         if (e.target !== null && "dataset" in e.target) {
             let selectorId = (e.target as HTMLTextAreaElement).dataset.selector;
             if (selectorId) {
-                this.onClick && this.onClick(selectorId);
+                let eleArr = document.querySelectorAll(`span[${markSelector}="${selectorId}"]`);
+             
+                const {top:offsetTop,left:offsetLeft} =  Util.getOffset(eleArr[0] as HTMLElement,markContainer)
+                
+                this.onClick && this.onClick({uid:selectorId,offsetTop,offsetLeft});
             }
         }
     }
@@ -217,6 +222,8 @@ class JsMark {
         let { uuid, className, textNodes } = rangeNode;
         
         let uid = uuid || Util.Guid()
+        let offsetTop:null|number=null;
+        let offsetLeft:null|number=null;
         textNodes.forEach((node) => {
             if (node.parentNode) {
                 let hl = document.createElement("span");
@@ -229,10 +236,17 @@ class JsMark {
                 hl.setAttribute(markSelector, uid);
                 node.parentNode.replaceChild(hl, node);
                 hl.appendChild(node);
+                if(offsetTop==null){
+                    const offset =  Util.getOffset(hl,markContainer)
+                    offsetTop = offset.top;
+                    offsetLeft = offset.left;
+                }
             }
         });
-        return uid;
+        return {uid,offsetTop,offsetLeft};
     }
+
+   
     /**
      * @intro 根据标注的元素上属性data-selector为uuid的标签
      * @param uuid 
@@ -240,6 +254,15 @@ class JsMark {
     deleteMark(uuid: Number): void {
         let eleArr = document.querySelectorAll(`span[${markSelector}="${uuid}"]`);
         this._removeMark(eleArr)
+    }
+
+    replaceMarkClass(uuid:number,className:string){
+        console.log(uuid)
+        let eleArr = document.querySelectorAll(`span[${markSelector}="${uuid}"]`);
+        eleArr.forEach((node) => {
+           
+            node.className = className
+        });
     }
 
     private _removeMark(eleS:NodeListOf<Element>){

@@ -85,7 +85,11 @@ interface RangeNodes{
     storeRenderOther?:any; //来自jsMark.renderStore方法的用户自定义参数
 }
 
-function repaintRange(opts:RangeNodes):void{...}
+function repaintRange(opts:RangeNodes):{
+    uid:number,
+    offsetLeft:number, //返回距离标记的根节点元素el的偏移量（前提是offsetParent可以命中此节点），否则相对于el的offsetParent进行计算
+    offsetRight:number,
+}{...}
 
 //调用示例
 jsMark.onSelected = function (res) {
