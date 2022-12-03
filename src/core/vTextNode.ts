@@ -25,7 +25,6 @@ export function initVTextNodes(textNodes: textEle[]) {
             offset += text.textContent ? text.textContent.length : 0; //跳过忽略节点
         // console.log(text.textContent)
     }
-    console.log(vTextNodes)
 }
 
 export function splitVTextNode(text: Text, offset: number): vText | void {
@@ -59,9 +58,10 @@ export function sliceVTextNode(startText: vText, endText: vText, hasIgnore = fal
 
 export function getTextContainer(offset: number): vText | void {
     let nodes = vTextNodes.filter(item => !item.ignore)
-    let i = nodes.findIndex(item => item.offset >= offset)
+    let i = nodes.findIndex(item =>{
+        return item.offset+item.text.length >= offset
+    })
     if (i !== -1) {
-        i = i == 0 ? 0 : i - 1;
         return nodes[i]
     } else {
         console.error("bug，找不到可以getTextContainer的节点，请联系开发人员")

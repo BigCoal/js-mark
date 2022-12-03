@@ -257,7 +257,6 @@ class JsMark {
     }
 
     replaceMarkClass(uuid:number,className:string){
-        console.log(uuid)
         let eleArr = document.querySelectorAll(`span[${markSelector}="${uuid}"]`);
         eleArr.forEach((node) => {
            

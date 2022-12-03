@@ -64,11 +64,9 @@ const App = {
           //   endTextNode.parentNode.append(ele);
         },
         onClick({ uid }) {
-          console.log(uid)
           if(activeUid==uid)return;
           activeUid = uid;
           const marked = document.querySelector(`[data-uid="${uid}"]`);
-          console.log(marked)
           textDesc.value = marked.textContent;
           addAntRecords({
             uid,

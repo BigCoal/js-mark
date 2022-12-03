@@ -5301,7 +5301,6 @@
             if (!text.ignore)
                 offset += text.textContent ? text.textContent.length : 0;
         }
-        console.log(vTextNodes);
     }
     function splitVTextNode(text, offset) {
         var _a;
@@ -5334,9 +5333,10 @@
     }
     function getTextContainer(offset) {
         let nodes = vTextNodes.filter(item => !item.ignore);
-        let i = nodes.findIndex(item => item.offset >= offset);
+        let i = nodes.findIndex(item => {
+            return item.offset + item.text.length >= offset;
+        });
         if (i !== -1) {
-            i = i == 0 ? 0 : i - 1;
             return nodes[i];
         }
         else {
@@ -5568,7 +5568,6 @@
             this._removeMark(eleArr);
         }
         replaceMarkClass(uuid, className) {
-            console.log(uuid);
             let eleArr = document.querySelectorAll(`span[${markSelector}="${uuid}"]`);
             eleArr.forEach((node) => {
                 node.className = className;
